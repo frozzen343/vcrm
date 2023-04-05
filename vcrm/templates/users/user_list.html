@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: #ffffff;">
+            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+            <li class="breadcrumb-item text-dark active" aria-current="page"><b>Список пользователей</b></li>
+        </ol>
+    </nav>
+
+    <div class="card crystal" style="margin-top: 0px; margin-bottom: 0;">
+        <div class="card-body">
+            <div class="col-lg-12">
+              
+              <div class="row">
+                <a href="{% url 'user_create' %}" class="custom-btn btn-16" role="button" style="margin-right:25px;">
+                  <i class="material-icons">add</i>
+                  Добавить пользователя
+                </a>
+              </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive" >
+        <div class="card" style="margin-top: 0px; margin-bottom: 0;">
+            <table class="table table-hover">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th></th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Почта</th>
+                    <th scope="col">Активный</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in users.all %}
+                    <tr>
+                        <td scope="row">{{ user.id }}</td>
+                        <td>
+                            <form method="POST" action="{% url 'user_del' pk=user.pk %}">
+                                {% csrf_token %}
+                                <a href="{% url 'user_edit' pk=user.pk %}"
+                                class="btn btn-outline-secondary btn-sm" role="button">
+                                    <span data-feather="edit"></span>
+                                </a>
+                                <a href="{% url 'user_del' pk=user.pk %}" data-target="#deleteNotificationModal_{{ user.id }}"
+                                class="btn btn-outline-secondary btn-sm" data-toggle="modal" role="button">
+                                    <span data-feather="trash"></span>
+                                </a>
+                                <!-- Delete Warning Modal -->
+                                <div class="modal fade" id="deleteNotificationModal_{{ user.id }}"
+                                        tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel_{{ user.id }}" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel_{{ user.id }}">Удалить пользователя?</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body text-center">
+                                                <div class="user_profile_pic">
+                                                    <img alt="Circle Image" style="height: auto; width: 41px; margin-right: 3px;" class="rounded-circle img-fluid" src="{{ user.avatar.url }}"/>
+                                                    <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+                                                </div>
+                                                <div><strong>Вы точно хотите удалить этого пользователя?</strong></div>
+                                                <div>После удаления, восстановление профиля будет <b>невозможно</b></div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Отмена</button>
+                                                <button type="submit" class="btn btn-outline-primary">Удалить</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </td>
+                        <td>
+                            <div class="user_profile_pic">
+                                <img alt="Circle Image" style="height: auto; width: 38px; margin-right: 3px;" class="rounded-circle img-fluid" src="{{ user.avatar.url }}"/>
+                                {{ user.first_name }} {{ user.last_name }}
+                            </div>
+                        </td>
+                        <td><span data-feather="mail" class="mr-1"></span> {{ user.email }}</td>
+                        <td>{% if user.is_active %}Да{% else %}Нет{% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: #ffffff;">
+        <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+        <li class="breadcrumb-item text-dark active" aria-current="page"><b>Профиль</b></li>
+        </ol>
+    </nav>
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="content-section mb-4">
+                    <div class="media">
+                        <img class="rounded-circle account-img" width="128" height="128" src="{{ user.avatar.url }}"/>
+                        <div class="media-body ml-3 mt-3">
+                            <h2 class="account-heading">{{ user.first_name }} {{ user.last_name }}</h2>
+                            <p class="text-secondary"><span data-feather="mail"></span> {{ user.email }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-section col-6">
+                    <h3 class="h4 mb-3 font-weight-normal">Информация пользователя</h3>
+                    <hr/>
+
+                    {% for field in form %}
+                        {% if field == form.avatar %}
+                            {{ field.label_tag }}<br>
+                            {{ field }}<br><br>
+                        {% else %}
+                            <div class="form-group text-left">
+                                {{ field.label_tag }}
+                                <div class="text-muted">
+                                    <p>{{ field.help_text }}</p>
+                                </div>
+
+                                {% if field.errors %}
+                                    <div class="alert alert-danger" style="padding:0">
+                                        <div class="container">
+                                            <div class="alert-icon">
+                                                <i class="material-icons">error_outline</i>
+                                            </div>
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true"><i class="material-icons">clear</i></span>
+                                            </button>
+                                            <b>Ошибка:</b> {{ field.errors }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {{ field|attr:"class:form-control from-control-lg" }}
+
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    <div class="form-group">
+                        <a href="{% url 'user_changepass' pk=user.pk  %}" class="nav-link">Изменить пароль</a>
+                    </div>
+
+                    {% comment %} <div class="form-group text-left">
+                        <div class="form-check">
+                            {{form.notify_new_tasks(class="form-check-input")}}
+                            {{form.notify_new_tasks.label(class="form-check-label")}}
+                            <span class="form-check-sign">
+                                <span class="check"></span>
+                                </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group text-left">
+                        <div class="form-check">
+                            {{form.notify_executor(class="form-check-input")}}
+                            {{form.notify_executor.label(class="form-check-label")}}
+                            <span class="form-check-sign">
+                                <span class="check"></span>
+                                </span>
+                        </div>
+                    </div> {% endcomment %}
+
+                    <div class="form-group">
+                        <input class='btn btn-lg btn-block btn-outline-info' type="submit" value="Сохранить">
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

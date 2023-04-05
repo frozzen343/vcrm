@@ -1,0 +1,371 @@
+{% load static %}
+
+<!-- froala_editor -->
+<script type="text/javascript"
+src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.3.0/codemirror.min.js"></script>
+<script type="text/javascript"
+src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.3.0/mode/xml/xml.min.js"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/froala_editor.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/align.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/code_beautifier.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/code_view.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/draggable.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/image.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/image_manager.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/link.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/lists.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/paragraph_format.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/paragraph_style.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/table.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/video.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/url.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'froala_editor/froala_editor/js/plugins/entities.min.js' %}"></script>
+<script>
+  new FroalaEditor('#edit', {
+  key: "1C%kZV[IX)_SL}UJHAEFZMUJOYGYQE[\\ZJ]RAe(+%$==",
+  attribution: false // to hide "Powered by Froala"
+  });
+</script>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+
+
+<!-- select2 -->
+<script src="{% static 'select2/select2.min.js' %}"></script>
+<script src="{% static 'select2/ru.js' %}"></script>
+<script>
+$(document).ready(function() {
+  $('.js-select2').select2({
+    maximumSelectionLength: 2,
+    language: "ru"
+  });
+});
+</script>
+
+<!-- прелоадер страницы -->
+
+<!-- ajax content -->
+<!-- для питона 
+return json.dumps({'data': render_template('444.html', text=text)})
+-->
+<script>  
+  function content(url)  
+  {  
+    if (!url) { url = '/index'; }
+    console.log(url)
+      $.ajax({  
+          url: url,  
+          cache: false,  
+          success: function(response){  
+              var json = jQuery.parseJSON(response)
+              $("#content").html(json.data);  
+          }  
+      });  
+  }  
+</script>
+
+
+<!-- стиль blockquote-->
+<style>
+  blockquote {
+    border-left: 1px solid #ff9101;
+    padding: 10px 15px;}
+    .slide p {display:none;}
+</style>
+
+<!-- таблица для поддержки мобилы -->
+<style>
+  @media screen and (max-width: 1000px) {
+  table.delivery thead {
+    display: none;
+  }
+  table.delivery tr {
+    display: flex;
+    text-align: right !important;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  table.delivery td {
+    display: flex;
+    text-align: right !important;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  table.delivery td:before {
+    content: attr(aria-label);
+    float: left;
+    font-weight: bold;
+  }
+}
+</style>
+
+<!-- стрелка -->
+<script>  
+  function Animate_Arrow(xx) {
+    $("#arrow"+xx).toggleClass('active');
+    let blocks = document.getElementsByClassName( xx ); // находим элементы с классом xx
+    for( let i = 0; i < blocks.length; i++){ // проходим циклом по всем элементам массивоподобного объекта
+      if (blocks[i].style.display === "none") {
+        blocks[i].style.display = "revert";
+      } else {
+        blocks[i].style.display = "none";
+      }
+
+    }}
+</script>
+<!-- ещё стрелка
+  $('.arrow--l-r').on('click', function () {
+    $(this).toggleClass('left right');
+  });
+  -->
+
+<!--скрыть blockquote -->
+<script>
+  $(".slidebutton").click(function() {
+  let bloq = document.getElementsByTagName( 'blockquote' );
+  for( let i = 0; i < bloq.length; i++){ // проходим циклом по всем элементам массивоподобного объекта
+      if (bloq[i].style.display === "none") {
+        bloq[i].style.display = "revert";
+      } else {
+        bloq[i].style.display = "none";
+      }
+    };
+  });
+</script>
+  
+
+<!-- форма select для фильтров-->
+<script>
+  feather.replace();
+  $.fn.selectpicker.Constructor.BootstrapVersion = '4';
+  $('.my-select').selectpicker({ liveSearch: true, actionsBox: true });
+</script>
+
+<!-- часы -->
+<script>  
+  function showdate()  
+  {  
+      $.ajax({  
+          url: "/get_date",  
+          cache: false,  
+          success: function(response){  
+              var json = jQuery.parseJSON(response)
+              $("#showdate").html(json.date);  
+          }  
+      });  
+  }  
+
+  $(document).ready(function(){  
+    showdate();  
+      setInterval('showdate()',60000);  
+  });  
+</script>
+
+<!-- загрузка фоновых картинок-->
+<script>
+  if (document.getElementById('img_main') != null){
+    var images = new Array();
+    images[0] = "background-image: url('{% static 'imgs/backgrounds/winter.jpg' %}');background-size: cover; background-position: top center;";
+    images[1] = "background-image: url('{% static 'imgs/backgrounds/spring.jpg' %}');background-size: cover; background-position: top center;";
+    images[2] = "background-image: url('{% static 'imgs/backgrounds/summer.jpg' %}');background-size: cover; background-position: top center;";
+    images[3] = "background-image: url('{% static 'imgs/backgrounds/autumn.jpg' %}');background-size: cover; background-position: top center;";
+
+    document.addEventListener("DOMContentLoaded", function()
+    {
+        var date = new Date();
+        var j = date.getMonth() + 1;
+        var i = 0;
+
+        if (j == 12 || j <= 2) i = 0; // зима
+        if (j >= 3 && j <= 5) i = 1; // весна
+        if (j >= 6 && j <= 8) i = 2; // лето
+        if (j >= 9 && j <= 11) i = 3; // осень
+        document.getElementById("img_main").style = images[i];
+
+    });
+  }
+</script>
+
+<!-- стрелочка анимированная -->
+<style>
+  @import 'https://fonts.googleapis.com/css?family=Lato';
+  .arrow {
+    width: 1.25rem;
+    height: 0.85rem;
+    display: inline-block;
+    position: relative;
+    margin: 0 0.1rem;
+  }
+  .arrow span {
+    top: 0.5rem;
+    position: absolute;
+    width: 0.75rem;
+    height: 0.1rem;
+    background-color: #949494;
+    display: inline-block;
+    transition: all 0.2s ease;
+  }
+  .arrow span:first-of-type {
+    left: 0;
+    transform: rotate(45deg);
+  }
+  .arrow span:last-of-type {
+    right: 0;
+    transform: rotate(-45deg);
+  }
+  .arrow.active span:first-of-type {
+    transform: rotate(-45deg);
+  }
+  .arrow.active span:last-of-type {
+    transform: rotate(45deg);
+  }
+  .arrow--l-r {
+    width: 1.25rem;
+    height: 1.25rem;
+    display: inline-block;
+    position: relative;
+    margin: 0 1rem;
+  }
+  .arrow--l-r.left span:nth-child(4) {
+    transform: rotate(-45deg);
+  }
+  .arrow--l-r.left span:nth-child(5) {
+    transform: rotate(45deg);
+  }
+  .arrow--l-r.right span:nth-child(1) {
+    transform: rotate(-45deg);
+  }
+  .arrow--l-r.right span:nth-child(2) {
+    transform: rotate(45deg);
+  }
+  .arrow--l-r span {
+    position: absolute;
+    height: 0.1rem;
+    background-color: #efefef;
+    transition: transform 0.2s ease;
+  }
+  .arrow--l-r span:nth-child(1),
+  .arrow--l-r span:nth-child(2),
+  .arrow--l-r span:nth-child(4),
+  .arrow--l-r span:nth-child(5) {
+    width: 0.625rem;
+    top: 0.625rem;
+  }
+  .arrow--l-r span:nth-child(1) {
+    right: 0;
+    transform-origin: bottom right;
+  }
+  .arrow--l-r span:nth-child(2) {
+    right: 0;
+    transform-origin: top right;
+  }
+  .arrow--l-r span:nth-child(3) {
+    width: 1.25rem;
+    top: 0.625rem;
+  }
+  .arrow--l-r span:nth-child(4) {
+    left: 0;
+    transform-origin: bottom left;
+  }
+  .arrow--l-r span:nth-child(5) {
+    left: 0;
+    transform-origin: top left;
+  }
+  </style>
+
+
+<!-- с заглавной буквы в P -->
+<style>
+  p.uppercase {
+    text-transform: uppercase;
+}
+</style>
+
+
+<!-- красивый чекбокс -->
+<style>
+  * {
+      box-sizing: border-box;
+  }
+  .checkbox-first__label{
+    cursor: pointer;
+    user-select: none;
+  }
+  .checkbox-first__label input:checked + .checkbox {
+    border-color: #25b9d4;
+  }
+  .checkbox-first__label .checkbox svg {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+  }
+  .checkbox-first__label input:checked + .checkbox svg path {
+    fill: #25b9d4;
+  }
+  .checkbox-first__label input:checked + .checkbox svg polyline {
+      stroke-dashoffset: 0;
+  }
+  .checkbox-first__label:hover .checkbox svg path {
+    stroke-dashoffset: 0;
+  }
+  .checkbox-first__label .checkbox {
+    position: relative;
+    top: 2px;
+    float: left;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border-radius: 3px;
+    border: 2px solid #c8ccd4;
+  }
+  .checkbox-first__label .checkbox svg {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+  }
+  .checkbox-first__label .checkbox svg path {
+    fill: none;
+    stroke: #25b9d4;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 71px;
+    stroke-dashoffset: 71px;
+    transition: all 0.6s ease;
+  }
+  .checkbox-first__label .checkbox svg polyline {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 18px;
+    stroke-dashoffset: 18px;
+    transition: all 0.3s ease;
+  }
+  .checkbox-first__label > span {
+    pointer-events: none;
+    vertical-align: middle;
+  }
+  .checkbox {
+    position: relative;
+    top: 2px;
+    float: left;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border-radius: 3px;
+    border: 2px solid #c8ccd4;
+  }
+  .checkbox-first__input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    z-index: -1;
+  }
+</style>

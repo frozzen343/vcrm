@@ -1,0 +1,109 @@
+{% load static %}
+
+<html>
+
+  {% include "head.html" %}
+
+  {% if not user.is_authenticated %} 
+    <meta http-equiv="REFRESH" content="0;url={% url 'login' %}">
+  {% else %}
+
+    {% if user.background == 'season' %}
+      <body class="profile-page sidebar-collapse" id="img_main"> 
+    {% elif user.background == 'none' %} 
+      <body class="profile-page sidebar-collapse"> 
+    {% else %}
+      <body class="profile-page sidebar-collapse" style="background-image: url('{{ user.background.url }}'); 
+            background-size: cover; background-position: top center;">  
+    {% endif %}
+    
+    <!--         навбар     -->
+    <nav class="navbar navbar-inverse navbar-expand-lg bg-dark" style="padding: 2px;">
+      <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-translate">
+          <img class="navbar-brand" src="{% static 'imgs/crm-logo.png' %}">
+          <button class="navbar-toggler" type="button" data-toggle="collapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse">
+          <div id="showdate" class="ml-auto h4" style="margin-right: 3px;"></div>  <!-- часы -->              
+          <ul class="navbar-nav ml-auto">
+            
+            <li class="nav-item">
+              <a href="{% url 'main' %}" class="nav-link">
+                Главная
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="javascript:;" class="nav-link">
+                Задачи
+              </a>
+            </li>
+
+            <li class="dropdown nav-item">
+              <a href="javascript:;" class="dropdown-toggle nav-link" data-toggle="dropdown">Меню</a>
+              <div class="dropdown-menu">
+                <a href="javascript:;" class="dropdown-item">Добавить задачу</a>
+                <a href="javascript:;" class="dropdown-item">Клиенты</a>
+                <a href="javascript:;" class="dropdown-item">Отчеты</a>
+              </div>
+            </li>
+
+            <!-- email ?
+            <li class="nav-item">
+                <i class="material-icons">email</i>
+            </li>
+            --> 
+            <li class="dropdown nav-item">
+              <a href="javascript:;" style="padding: 1px;" class="dropdown-toggle nav-link" data-toggle="dropdown">
+
+              <img alt="Avatar" style="height: auto; width: 41px; margin-right: 3px;" class="rounded-circle img-fluid" src="{{ user.avatar.url }}"/>
+              {{ user.first_name }} {{ user.last_name }} </a>
+              <div class="dropdown-menu">
+                <a href="{% url 'background' %}" class="dropdown-item">Оформление</a>
+                <a href="{% url 'profile' user.pk %}" class="dropdown-item">Профиль</a>
+                <a href="{% url 'logout' %}" class="dropdown-item">Выход</a>
+                {% if 'users.view_user' in perms %}
+                <hr>
+                <a href="{% url 'user_list' %}" class="dropdown-item">Управление пользователями</a>
+                {% endif %}
+              </div>
+            </li>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-->
+    </nav>
+
+
+
+    <div class="container-fluid">
+      <div class="container">
+        {% comment %} {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+              {% for category, message in messages %}
+                  <div class="alert alert-{{ category }}">
+                      {{ message }}
+                  </div>
+              {% endfor %}
+          {% endif %}
+        {% endwith %} {% endcomment %}
+
+        <!-- <div id="content"></div> -->
+        {% block content %}{% endblock %}
+        <div class="ajax_indicator"></div>
+      </div>
+    </div>
+
+  </body>
+    
+  {% endif %}
+
+  {% include "scripts.html" %}
+
+</html>

@@ -1,0 +1,62 @@
+{% load static %}
+{% load widget_tweaks %}
+
+<html>
+  {% include "head.html" %}  
+
+  <link id="pagestyle" href="{% static 'assets/css/material-kit-pro.min.css' %}" rel="stylesheet" />
+
+  <body class="sign-up-basic">
+    <div class="page-header align-items-start min-vh-100" style="background-image: url('{% static 'assets/img/bg1_low.jpg' %}');">
+      <span class="mask bg-gradient-dark opacity-6"></span>
+      <div class="container my-auto">
+        <div class="row">
+          <div class="col-lg-4 col-md-8 mx-auto">
+            <div class="card z-index-0">
+              <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-success shadow-success border-radius-lg py-3 pe-1">
+                  <div class="row">
+                    <div class="text-center">
+                      <img src="{% static 'imgs/crm-logo-icon.png' %}">
+                    </div>
+                    <h4 class="text-white font-weight-bolder text-center mt-2 mb-0">VCRM - Вход</h4> 
+                  </div><br>
+                </div>
+              </div>
+              <div class="row px-xl-5 px-sm-4 px-3">
+                <div class="mt-2 position-relative text-center">
+                  <p class="text-sm font-weight-bold mb-2 text-secondary text-border d-inline z-index-2 bg-white px-3">
+                    {% comment %} здесь может быть красивый текст {% endcomment %}
+                  </p>
+                </div>
+              </div>
+              <div class="card-body">
+
+                <form class="form-signin" method="POST">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div class="form-group text-left">
+                        {{ form.username.label_tag }}
+                        {{ form.username|attr:"class:form-control from-control-lg"|attr:"type:email"|attr:"autocomplete:email" }}
+                    </div>
+                    <div class="form-group text-left">
+                        {{ form.password.label_tag }}
+                        {{ form.password|attr:"class:form-control from-control-lg" }}
+                    </div>
+                    <div class="text-center">
+                        <div class="form-group"> 
+                            <input class='btn bg-gradient-dark w-100 my-4 mb-2' type="submit" value="Вход">
+                        </div>
+                    </div>
+                </form>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% include "scripts.html" %}
+  </body>
+
+</html>
