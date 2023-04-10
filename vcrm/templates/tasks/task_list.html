@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+
+    <!-- TODO: разные бредкремпы везде -->
+    <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px;">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background-color: #ffffff;">  
+            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+            <li class="breadcrumb-item text-dark active" aria-current="page"><b>Задачи</b></li>
+            </ol>
+        </nav>
+    </div>
+    <hr>
+    
+    <div class="card" style="margin-top: 0px;">
+        <div class="card-body">
+            <form method="GET" action="{% url 'task_list', pk=task.id}">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <a href="{% url 'task_create' %}" class="custom-btn btn-16" role="button">
+                            <i class="material-icons">add</i>
+                            Добавить задачу
+                        </a>
+                    </div>
+                    {% for field in filter.form %}
+                    <div class="col-lg-2">
+                        <div class="form-group text-left">
+                            {{ field.label_tag }}
+                            {{ field|attr:"class:form-control from-control-lg" }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="col-lg-2">
+                        <button type="submit" class="custom-btn btn-16">Фильтр</button>
+                    </div>
+                </div>
+            </form>
+            {% if not tasks %}       
+              <div class="container text-center pt-4">
+                <div><span data-feather="eye-off"></span></div>
+                <p>Задач не найдено.</p>
+              </div> 
+            {% else %}
+              <table class="delivery table align-items-center mb-0" id="table_sort">
+                  <thead>
+                    <tr>
+                      <th data-sort-method='none' class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Постановщик</th>
+                      <th data-sort-method='none' class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Заголовок</th>
+                      <th data-sort-method='none' class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Статус</th>
+                      <th data-sort-method='none' class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ответственный</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="cursor: pointer;"
+                            onclick="Animate_Arrow('_date_created');">Поставлена
+                            <span class="arrow" id="arrow_date_created"><span></span><span></span></span>
+                      </th>
+                    </tr>
+                  </thead>
+      
+                  <style>
+                  .table th, .table td {
+                        padding: 0.5rem;
+                    }
+                    .card .card-body, .card .card-footer {
+                        padding: 0.8rem 1.8rem;
+                    }
+                  </style>
+                  <tbody>
+                    {% for task in tasks.all %}
+                    <tr style="cursor: pointer;" onclick="window.location.href='{% url 'task_edit' pk=task.id %}'">
+                      <td aria-label="Постановщик" class="col-lg-3">
+                        <div class="d-flex px-2 py-1">
+                          <div>
+                            <img src="http://cdn.onlinewebfonts.com/svg/img_110805.png" style="height: auto; width: 36px; margin-right: 3px;" class="avatar avatar-sm me-3">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center"> <!--TODO clients-->
+                            <h6 class="mb-0 text-xs">{% if task.sender %}{{ task.sender }}{% else %}{{ task.company }}{% endif %}</h6>
+                            <p class="text-xs text-secondary mb-0">{{ task.email }}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td aria-label="Заголовок" class="col-lg-3 align-middle text-sm">
+                        <div class="row">
+                          <!--<p class="text-xs font-weight-bold mb-0">Manager</p>-->
+                          <p class="text-xs text-secondary mb-0">{{ task.title }}
+                            {% if task.comment_task.get_user_comment_count %}
+                              
+                              <i class="material-icons" style="font-size: 15px;">comment</i>
+                              {{ task.comment_task.get_user_comment_count }}
+                            {% endif %}
+                          </p>
+                        </div>
+                      </td>
+                      <td aria-label="Статус" class="align-middle text-center text-sm col-lg-1">
+                        <span class="badge badge-pill
+                              {% if task.status == 'Новая' %} badge-default
+                              {% elif task.status == 'В работе' %} badge-warning
+                              {% elif task.status == 'Выполнена' %} badge-success
+                              {% elif task.status == 'Отложена' %} badge-rose
+                              {% elif task.status == 'Не задача' %} badge-primary {% endif %}">{{ task.status }}</span>
+                        <br>
+                        {% if task.drive %}
+                          <span class="material-icons" style="margin-left:0cm">directions_car</span>
+                          {% endif %}
+                          {% if task.fire %}
+                          <span class="material-icons" style="margin-left:0cm">local_fire_department</span>
+                          {% endif %}
+                      </td>
+                      <td aria-label="Ответственный" class="align-middle text-center text-sm col-lg-2">
+                        <div style="font-size: 13px;">
+                          {% if task.performer %}
+                            <img src="{{ task.performer.avatar.url }}" style="height: auto; width: 31px; margin-right: 3px;" alt="Avatar">
+                            {{ task.performer.first_name }} {{ task.performer.last_name }}
+                          {% else %} - 
+                          {% endif %}
+                        </div>
+                      </td>
+                      <td aria-label="Поставлена" class="align-middle text-center col-lg-2">
+                        <span class="text-secondary text-xs font-weight-bold">{{ task.date_created }}</span>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+
+                <!-- pagination -->
+                {% if is_paginated %}
+                  <div class="row" style="justify-content: flex-end;">
+                    <div class="col-lg-2" style="margin-top: 25px;" >
+                        <ul class="pagination pagination-primary">
+                          {% if page_obj.previous_page_number > 1 %}
+                            <li class="page-item"><a href="{% url 'task_list' %}?page=1" class="page-link">1</a></li>
+                          {% endif %}
+
+                          {% if page_obj.has_previous %}
+                              <li class="page-item"><a href="{% url 'task_list' %}?page={{ page_obj.previous_page_number }}" class="page-link">назад</a></li>
+                          {% endif %}
+
+                          <li class="active page-item"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+
+                          {% if page_obj.has_next %}
+                            <li class="page-item"><a href="{% url 'task_list' %}?page={{ page_obj.next_page_number }}" class="page-link">далее</a></li>
+                          {% endif %}
+
+                          {% if page_obj.next_page_number < page_obj.paginator.num_pages %}
+                            <li class="page-item"><a href="{% url 'task_list' %}?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                          {% endif %}
+                        </ul>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endif %}
+        </div>
+    </div>
+
+
+    <script> new Tablesort(document.getElementById('table_sort')); </script>
+
+{% endblock %}

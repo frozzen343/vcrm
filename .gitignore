@@ -16,4 +16,4 @@ __pycache__/
 .pytest_cache
 
 # local settings
-media/profile_images/
+profile_images/

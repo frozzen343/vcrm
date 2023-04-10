@@ -30,6 +30,9 @@
     <script src="{% static 'assets/js/material-kit.js' %}" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 
+    <!-- TinyMCE -->
+    <script src="{% static 'tinymce.min.js' %}" referrerpolicy="origin"></script>
+
     <!-- сортировка таблиц -->
     <script src='{% static 'tablesort-master/tablesort.js' %}'></script>
     <script src='{% static 'tablesort-master/tablesort.date.js' %}'></script>
@@ -40,7 +43,7 @@
 
 
     <!-- froala_editor -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+    {% comment %} <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{% static 'froala_editor/froala_editor/css/froala_editor.css' %}">
     <link rel="stylesheet" href="{% static 'froala_editor/froala_editor/css/froala_style.css' %}">
     <link rel="stylesheet" href="{% static 'froala_editor/froala_editor/css/plugins/code_view.css' %}">
@@ -48,10 +51,10 @@
     <link rel="stylesheet" href="{% static 'froala_editor/froala_editor/css/plugins/image.css' %}">
     <link rel="stylesheet" href="{% static 'froala_editor/froala_editor/css/plugins/table.css' %}">
     <link rel="stylesheet" href="{% static 'froala_editor/froala_editor/css/plugins/video.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.3.0/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.3.0/codemirror.min.css"> {% endcomment %}
     
     <!-- select2 -->
-    <link rel="stylesheet" href="{% static 'select2/select2.min.css' %}">
+    {% comment %} <link rel="stylesheet" href="{% static 'select2/select2.min.css' %}"> {% endcomment %}
 
     <!-- nice buttons -->
     <link rel="stylesheet" href="{% static 'beaty_buttons/beauty_buttons.css' %}">

@@ -1,5 +1,5 @@
 {% load static %}
-
+<!DOCTYPE HTML>
 <html>
 
   {% include "head.html" %}
@@ -40,16 +40,19 @@
                 Главная
               </a>
             </li>
-            <li class="nav-item">
-              <a href="javascript:;" class="nav-link">
-                Задачи
-              </a>
+            <li class="dropdown nav-item">
+              <a href="javascript:;" class="dropdown-toggle nav-link" data-toggle="dropdown">Задачи</a>
+              <div class="dropdown-menu">
+                <a href="{% url 'task_create' %}" class="dropdown-item">Добавить задачу</a>
+                <a href="{% url 'task_list' %}?status=Новая" class="dropdown-item">Новые</a>
+                <a href="{% url 'task_list' %}?status=В работе&performer={{ user.id }}" class="dropdown-item">Мои</a>
+                <a href="{% url 'task_list' %}" class="dropdown-item">Все</a>
+              </div>
             </li>
 
             <li class="dropdown nav-item">
               <a href="javascript:;" class="dropdown-toggle nav-link" data-toggle="dropdown">Меню</a>
               <div class="dropdown-menu">
-                <a href="javascript:;" class="dropdown-item">Добавить задачу</a>
                 <a href="javascript:;" class="dropdown-item">Клиенты</a>
                 <a href="javascript:;" class="dropdown-item">Отчеты</a>
               </div>
