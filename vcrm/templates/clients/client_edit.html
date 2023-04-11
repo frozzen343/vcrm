@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: #ffffff;">
+        <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+        <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'client_list' %}">Клиенты</a></li>
+        <li class="breadcrumb-item text-dark active" aria-current="page"><b>{{ client.name }}</b></li>
+        </ol>
+    </nav>
+
+    
+    <form method="POST" action="{% url 'client_del' pk=client.pk %}">
+        {% csrf_token %}
+        <a href="{% url 'contact_list' fk=client.pk %}" class="custom-btn btn-16">
+            <span class="material-icons">list</span>Связанные контакты
+        </a>
+        <a href="{% url 'client_del' pk=client.pk %}" class="custom-btn btn-16" data-toggle="modal" data-target="#Modal_Client_Del">
+            <span class="material-icons">delete_forever</span>Удалить клиента
+        </a>
+        <!-- Del Client Modal -->
+        <div class="modal fade" id="Modal_Client_Del" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title">Подтверждение</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="material-icons">clear</i>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div class="text">Вы уверены, что хотите удалить эту организацию ? Список связанных контактов пропадёт.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-md btn-outline-danger mr-2">Удалить</button>
+                    <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
+                </div>
+            </div>
+            </div>
+        </div>
+        <!--  End Modal -->
+    </form>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{% url 'client_edit' pk=client.pk %}">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-6">  
+                        {% for field in form %}
+                            {% if field != form.description %}    
+                                <div class="form-group text-left">
+                                    {% if field == form.is_active %}
+                                        <div class="form-check" style="margin-top: 30px;">
+                                            <label class="form-check-label">
+                                                {{ field.label_tag }}
+                                                {{ field|attr:"class:form-check-input" }}
+                                                <span class="form-check-sign">
+                                                    <span class="check"></span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    {% else %}
+                                        {{ field.label_tag }}
+                                        <div class="text-muted">
+                                            <p>{{ field.help_text }}</p>
+                                        </div>
+
+                                        {% if field.errors %}
+                                            <div class="alert alert-danger" style="padding:0">
+                                                <div class="container">
+                                                    <div class="alert-icon">
+                                                        <i class="material-icons">error_outline</i>
+                                                    </div>
+                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                        <span aria-hidden="true"><i class="material-icons">clear</i></span>
+                                                    </button>
+                                                    <b>Ошибка:</b> {{ field.errors }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {{ field|attr:"class:form-control from-control-lg" }}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="col-lg-6">                    
+                        <div class="form-group text-left">
+                            {{ form.description.label_tag }}
+                            {{ form.description|attr:"class:form-control from-control-lg" }}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-lg-6">
+                    <input class='btn btn-lg btn-block btn-outline-info' type="submit" value="Сохранить">
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}                        

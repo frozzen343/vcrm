@@ -4,6 +4,7 @@ from django.http.response import HttpResponseRedirect
 from django.views.generic.edit import UpdateView, CreateView
 from django_filters.views import FilterView
 
+from clients.models import Contact
 from tasks.models import Task, Comment
 from tasks.filters import TaskFilter
 from tasks.forms import CommentEditForm
@@ -57,8 +58,8 @@ class TaskCreateView(CreateView):
               'performer',
               'status',
               'hours_cost',
-              'fire',
-              'drive',
+              'contacts', 'client',
+              'fire', 'drive',
               'description']
 
     def get_initial(self):
@@ -67,6 +68,7 @@ class TaskCreateView(CreateView):
     def form_valid(self, form):
         comment = (f'Пользователь <b>{self.request.user.first_name} '
                    f'{self.request.user.last_name}</b> создал задачу')
+        form.save()
         add_comment(task=form.instance, comment=comment)
         return super().form_valid(form)
 
@@ -74,10 +76,13 @@ class TaskCreateView(CreateView):
 class TaskEditView(UpdateView):
     template_name = 'tasks/task_edit.html'
     model = Task
+    extra_context = {'contacts': Contact.objects.values_list('contact',
+                                                             flat=True)}
     second_form_class = CommentEditForm
     fields = ['status',
               'hours_cost',
               'performer',
+              'contacts', 'client',
               'fire', 'drive',
               'description']
 

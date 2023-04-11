@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+    
+    <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: #ffffff;">  
+            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'client_list' %}">Клиенты</a></li>
+            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'client_edit' pk=client.pk %}">{{ client.name }}</a></li>
+            <li class="breadcrumb-item text-dark active" aria-current="page"><b>Контакты</b></li>
+        </ol>
+    </nav>
+    </div>
+    <hr>
+
+    <div class="row" style="justify-content: flex-end;">
+        <a href="{% url 'contact_create' fk=client.pk %}" class="custom-btn btn-16" role="button">
+            <i class="material-icons">add</i>
+            Добавить контакт
+        </a>
+    </div>    
+
+    {% if not contacts %}       
+        <div class="container text-center pt-4">
+            <div><span data-feather="eye-off"></span></div>
+            <p>Контакты к клиенту ещё не привязаны</p>
+        </div> 
+    {% else %}
+        <div class="row">
+            <div class="card" style="margin-top: 5px;">
+                <div class="table-responsive">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>                    
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="cursor: pointer; vertical-align: middle;"
+                                    onclick="Animate_Arrow('_client_name'); window.location.href='#';">Список контактов
+                                    <span class="arrow" id="arrow_client_name"><span></span><span></span></span>
+                                </th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="cursor: pointer;"
+                                    onclick="Animate_Arrow('_date_activity'); window.location.href='#';">Последняя активность
+                                    <span class="arrow" id="arrow_date_activity"><span></span><span></span></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        {% for contact in contacts %}
+                            <tr style="cursor: pointer;" onclick="window.location.href='{% url 'contact_edit' fk=client.pk pk=contact.pk %}';">
+                                <td width="70%">
+                                    {{ contact.contact }}
+                                    <p class="text-xs text-secondary mb-0">{{ contact.fio|default:"-" }}</p>
+                                </td>
+
+                                <td class="text-center" width="22%">
+                                {{ contact.last_activity|default:"-" }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+                <!-- pagination -->
+                {% if is_paginated %}
+                    <div class="row" style="justify-content: flex-end;">
+                        <div class="col-lg-2" style="margin-top: 25px;" >
+                            <ul class="pagination pagination-primary">
+                                {% if page_obj.previous_page_number > 1 %}
+                                    <li class="page-item"><a href="{% url 'contact_list' fk=client.pk %}?page=1" class="page-link">1</a></li>
+                                {% endif %}
+
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item"><a href="{% url 'contact_list' fk=client.pk %}?page={{ page_obj.previous_page_number }}" class="page-link">назад</a></li>
+                                {% endif %}
+
+                                <li class="active page-item"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item"><a href="{% url 'contact_list' fk=client.pk %}?page={{ page_obj.next_page_number }}" class="page-link">далее</a></li>
+                                {% endif %}
+
+                                {% if page_obj.next_page_number < page_obj.paginator.num_pages %}
+                                    <li class="page-item"><a href="{% url 'contact_list' fk=client.pk %}?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+
+{% endblock %}

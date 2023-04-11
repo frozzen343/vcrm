@@ -1,12 +1,9 @@
 from tinymce.models import HTMLField
-from django import template
 from django.db import models
 from django.core.exceptions import ValidationError
 
 from users.models import User
-
-
-register = template.Library()
+from clients.models import Client
 
 
 TASK_STATUS_CHOICES = (
@@ -22,10 +19,8 @@ class Task(models.Model):
     # TODO:
     #     клиенты (постановщик, контакты, организация)
     #     почта
-    title = models.CharField('Заголовок',
-                             max_length=254,
-                             unique=False,
-                             blank=False)
+    title = models.CharField(
+        'Заголовок', max_length=254, unique=False, blank=False)
     hours_cost = models.DecimalField('Трудозатраты в часах',
                                      max_digits=3,
                                      decimal_places=1,
@@ -43,13 +38,21 @@ class Task(models.Model):
     drive = models.BooleanField('С выездом', default=False)
     date_created = models.DateTimeField('Дата создания', auto_now_add=True)
     date_closed = models.DateTimeField('Дата закрытия', null=True)
-
+    contacts = models.CharField(
+        'Контакты', max_length=90, null=True, blank=True)
     performer = models.ForeignKey(User,
                                   null=True,
                                   blank=True,
                                   on_delete=models.SET_NULL,
                                   related_name='task_performer',
                                   verbose_name='Исполнитель')
+
+    client = models.ForeignKey(Client,
+                               null=True,
+                               blank=True,
+                               on_delete=models.SET_NULL,
+                               related_name='task_client',
+                               verbose_name='Клиент')
 
     def __str__(self):
         return self.title

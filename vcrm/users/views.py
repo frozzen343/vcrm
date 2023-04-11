@@ -7,8 +7,7 @@ from django.contrib.auth.forms import SetPasswordForm, AuthenticationForm
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.core.exceptions import PermissionDenied
-from django.views.generic import ListView
-from django.views.generic.edit import UpdateView, DeleteView, CreateView
+from django.views.generic import UpdateView, DeleteView, CreateView, ListView
 
 from users.forms import CreateUserForm
 from users.models import User

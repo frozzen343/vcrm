@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+    
+    <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: #ffffff;">  
+        <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+        <li class="breadcrumb-item text-dark active" aria-current="page"><b>Клиенты</b></li>
+        </ol>
+    </nav>
+    </div>
+    <hr>
+
+    <div class="row" style="justify-content: flex-end;">
+        <a href="{% url 'client_create' %}" class="custom-btn btn-16" role="button">
+            <i class="material-icons">add</i>
+            Добавить клиента
+        </a>
+    </div>    
+    client_create
+    {% if not clients %}       
+        <div class="container text-center pt-4">
+            <div><span data-feather="eye-off"></span></div>
+            <p>Список клиентов не заполнен</p>
+        </div> 
+    {% else %}
+        <div class="row">
+            <div class="card" style="margin-top: 5px;">
+                <div class="table-responsive">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>                    
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="cursor: pointer; vertical-align: middle;"
+                                    onclick="Animate_Arrow('_client_name'); window.location.href='#';">Список клиентов
+                                    <span class="arrow" id="arrow_client_name"><span></span><span></span></span>
+                                </th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="cursor: pointer;"
+                                    onclick="Animate_Arrow('_date_activity'); window.location.href='#';">Последняя активность
+                                    <span class="arrow" id="arrow_date_activity"><span></span><span></span></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        {% for client in clients %}
+                            <tr style="cursor: pointer;" onclick="window.location.href='{% url 'client_edit' pk=client.pk %}';">
+                                <td width="70%">
+                                    {{ client.name }}
+                                    {% if not client.is_active %} 
+                                        <span class="badge badge-pill badge-warning">не обслуживается</span>
+                                    {% endif %}
+                                    <p class="text-xs text-secondary mb-0">{{ client.web_site|default:"-" }} 
+                                        &bull; {{ client.phone|default:"-" }} 
+                                        &bull; {{ client.address|default:"-" }}  </p>
+                                </td>
+
+                                <td class="text-center" width="22%">
+                                {{ client.last_activity|default:"-" }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+                <!-- pagination -->
+                {% if is_paginated %}
+                    <div class="row" style="justify-content: flex-end;">
+                        <div class="col-lg-2" style="margin-top: 25px;" >
+                            <ul class="pagination pagination-primary">
+                                {% if page_obj.previous_page_number > 1 %}
+                                    <li class="page-item"><a href="{% url 'client_list' %}?page=1" class="page-link">1</a></li>
+                                {% endif %}
+
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item"><a href="{% url 'client_list' %}?page={{ page_obj.previous_page_number }}" class="page-link">назад</a></li>
+                                {% endif %}
+
+                                <li class="active page-item"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item"><a href="{% url 'client_list' %}?page={{ page_obj.next_page_number }}" class="page-link">далее</a></li>
+                                {% endif %}
+
+                                {% if page_obj.next_page_number < page_obj.paginator.num_pages %}
+                                    <li class="page-item"><a href="{% url 'client_list' %}?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+
+{% endblock %}

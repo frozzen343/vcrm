@@ -5,24 +5,29 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb" style="background-color: #ffffff;">
             <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
-            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'user_list' %}">Список пользователей</a></li>
-            <li class="breadcrumb-item text-dark active" aria-current="page"><b>Добавление пользователя</b></li>
+            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'client_list' %}">Клиенты</a></li>
+            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'client_edit' pk=client.pk %}">{{ client.name }}</a></li>
+            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'contact_list' fk=client.pk %}">Контакты</a></li>
+            <li class="breadcrumb-item text-dark active" aria-current="page"><b>Добавить контакт</b></li>
+
+
         </ol>
     </nav>
 
     <div class="card">
         <div class="card-body">
+            <h4 class="Title" style="margin-left: 10px;">Новый контакт <hr/> </h4>
+
             <form method="POST">
                 {% csrf_token %}
                 <div class="content-section col-6">
-
+                    
                     {% for field in form %}
                         <div class="form-group text-left">
                             {{ field.label_tag }}
                             <div class="text-muted">
                                 <p>{{ field.help_text }}</p>
                             </div>
-
                             {% if field.errors %}
                                 <div class="alert alert-danger" style="padding:0">
                                     <div class="container">
@@ -38,7 +43,7 @@
                             {% endif %}
 
                             {{ field|attr:"class:form-control from-control-lg" }}
-                            
+
                         </div>
                     {% endfor %}
 
@@ -51,5 +56,7 @@
             </form>
         </div>
     </div>
+
+
 
 {% endblock %}

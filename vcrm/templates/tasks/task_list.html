@@ -15,7 +15,7 @@
     
     <div class="card" style="margin-top: 0px;">
         <div class="card-body">
-            <form method="GET" action="{% url 'task_list', pk=task.id}">
+            <form method="GET" action="{% url 'task_list' %}">
                 <div class="row">
                     <div class="col-lg-4">
                         <a href="{% url 'task_create' %}" class="custom-btn btn-16" role="button">

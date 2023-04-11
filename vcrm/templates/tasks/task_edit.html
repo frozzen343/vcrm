@@ -126,6 +126,33 @@
                     </li>         
                 </ul>
             </div>
+            <div class="col-md-4">
+                <ul class="list-group list-group-flush" style="padding: 1rem">
+                    <h4 class="Title" style="margin-left: 10px;">Клиент<hr/></h4>
+                    {% if task.client %}
+                        {% if task.contacts not in contacts %} 
+                            <li class="list-group-item g_field">
+                                <a href="{% url 'contact_create' fk=task.client.pk contact=task.contacts %}" class="btn btn-outline-secondary btn-sm" role="button" style="margin-left: 2rem;">
+                                    Привязать контакт к клиенту
+                                </a>                         
+                            </li> 
+                        {% comment %} {% else %}
+                        <li class="list-group-item g_field">
+                            <div class="label">Контакты</div>
+                            <div class="text">{{ task.contacts|default:"_" }}</div>
+                        </li> {% endcomment %}
+                        {% endif %}
+                    {% endif %}
+                    <li class="list-group-item g_field">
+                        <div class="label">Контакты</div>
+                        <div class="text">{{ task.contacts|default:"_" }}</div>
+                    </li>
+                    <li class="list-group-item g_field">
+                        <div class="label">Организация</div>
+                        <div class="text">{{ task.client.name|default:"_" }}</div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
