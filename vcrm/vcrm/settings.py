@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'main',
     'tasks',
     'clients',
+    'reports',
 ]
 
 MIDDLEWARE = [

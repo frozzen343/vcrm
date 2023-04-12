@@ -1,0 +1,448 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px;">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background-color: #ffffff;">  
+            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+            <li class="breadcrumb-item text-dark active" aria-current="page"><b>Отчёты</b></li>
+            </ol>
+        </nav>
+    </div>
+    <hr>
+
+    <!-- TODO: permissions -->
+    <a href="{% url 'hours_reports' %}" class="custom-btn btn-16">
+        <span class="material-icons">list</span>Отчёт по часам
+    </a>
+
+    <div class="row">
+
+        <!-- hours_per_month -->
+        <div class="col-lg-6">
+            <div class="card z-index-2 ">
+                <div class="card-header" style="background-image: linear-gradient(195deg,#42424a,#191919);border-radius: 0.5rem;">
+                    <div class="chart">
+                        <canvas id="hours_per_month" class="chart-canvas" height="170" width="768" style="display: block; box-sizing: border-box; height: 170px; width: 768px;"></canvas>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-0 ">Часы</h6>
+                    <p class="text-sm ">Количество часов по месяцам</p>
+                    <hr class="dark horizontal">
+                    {% if not hours_per_month %}
+                        <div class="d-flex ">
+                            <i class="material-icons text-sm my-auto me-1">schedule</i>
+                            <p class="mb-0 text-sm">Выполненных задач ещё нет</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var ctx1 = document.getElementById("hours_per_month").getContext("2d");
+    
+            new Chart(ctx1, {
+                type: "line",
+                data: {
+                labels: [{% for hours in hours_per_month %} '{{ hours.month|date:'F' }}', {% endfor %}],
+                datasets: [{
+                    label: "Часов",
+                    tension: 0,
+                    borderWidth: 0,
+                    pointRadius: 5,
+                    pointBackgroundColor: "rgba(255, 255, 255, .8)",
+                    pointBorderColor: "transparent",
+                    borderColor: "rgba(255, 255, 255, .8)",
+                    borderWidth: 4,
+                    backgroundColor: "transparent",
+                    fill: true,
+                    data: [{% for hours in hours_per_month %} {{ hours.c|floatformat:"u" }}, {% endfor %}],
+                    maxBarThickness: 6
+        
+                }],
+                },
+                options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                    display: false,
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                scales: {
+                    y: {
+                    grid: {
+                        drawBorder: false,
+                        display: true,
+                        drawOnChartArea: true,
+                        drawTicks: false,
+                        borderDash: [5, 5],
+                        color: 'rgba(255, 255, 255, .2)'
+                    },
+                    ticks: {
+                        display: true,
+                        padding: 10,
+                        color: '#f8f9fa',
+                        font: {
+                        size: 14,
+                        weight: 300,
+                        family: "Roboto",
+                        style: 'normal',
+                        lineHeight: 2
+                        },
+                    }
+                    },
+                    x: {
+                    grid: {
+                        drawBorder: false,
+                        display: false,
+                        drawOnChartArea: false,
+                        drawTicks: false,
+                        borderDash: [5, 5]
+                    },
+                    ticks: {
+                        display: true,
+                        color: '#f8f9fa',
+                        padding: 10,
+                        font: {
+                        size: 14,
+                        weight: 300,
+                        family: "Roboto",
+                        style: 'normal',
+                        lineHeight: 2
+                        },
+                    }
+                    },
+                },
+                },
+            });
+        
+        </script>
+
+        <!-- count_done_per_month -->
+        <div class="col-lg-6">
+            <div class="card z-index-2 ">
+                <div class="card-header" style="background-image: linear-gradient(195deg, rgb(73, 163, 241), rgb(26, 115, 232));border-radius: 0.5rem;">
+                    <div class="chart">
+                        <canvas id="count_done_per_month" class="chart-canvas" height="170" width="768" style="display: block; box-sizing: border-box; height: 170px; width: 768px;"></canvas>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-0 ">Количество</h6>
+                    <p class="text-sm ">Количество задач по месяцам</p>
+                    <hr class="dark horizontal">
+                    {% if not count_done_per_month %}
+                        <div class="d-flex ">
+                            <i class="material-icons text-sm my-auto me-1">schedule</i>
+                            <p class="mb-0 text-sm">Выполненных задач ещё нет</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var ctx1 = document.getElementById("count_done_per_month").getContext("2d");
+    
+            new Chart(ctx1, {
+                type: "line",
+                data: {
+                labels: [{% for tasks in count_done_per_month %} '{{ tasks.month|date:'F' }}', {% endfor %}],
+                datasets: [{
+                    label: "Количество",
+                    tension: 0,
+                    borderWidth: 0,
+                    pointRadius: 5,
+                    pointBackgroundColor: "rgba(255, 255, 255, .8)",
+                    pointBorderColor: "transparent",
+                    borderColor: "rgba(255, 255, 255, .8)",
+                    borderWidth: 4,
+                    backgroundColor: "transparent",
+                    fill: true,
+                    data: [{% for tasks in count_done_per_month %} {{ tasks.c|floatformat:"u" }}, {% endfor %}],
+                    maxBarThickness: 6
+        
+                }],
+                },
+                options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                    display: false,
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                scales: {
+                    y: {
+                    grid: {
+                        drawBorder: false,
+                        display: true,
+                        drawOnChartArea: true,
+                        drawTicks: false,
+                        borderDash: [5, 5],
+                        color: 'rgba(255, 255, 255, .2)'
+                    },
+                    ticks: {
+                        display: true,
+                        padding: 10,
+                        color: '#f8f9fa',
+                        font: {
+                        size: 14,
+                        weight: 300,
+                        family: "Roboto",
+                        style: 'normal',
+                        lineHeight: 2
+                        },
+                    }
+                    },
+                    x: {
+                    grid: {
+                        drawBorder: false,
+                        display: false,
+                        drawOnChartArea: false,
+                        drawTicks: false,
+                        borderDash: [5, 5]
+                    },
+                    ticks: {
+                        display: true,
+                        color: '#f8f9fa',
+                        padding: 10,
+                        font: {
+                        size: 14,
+                        weight: 300,
+                        family: "Roboto",
+                        style: 'normal',
+                        lineHeight: 2
+                        },
+                    }
+                    },
+                },
+                },
+            });
+        
+        </script>
+
+        <!-- new_tasks_per_month -->
+        <div class="col-lg-6">
+            <div class="card z-index-2 ">
+                <div class="card-header" style="background-image: linear-gradient(195deg,#ec407a,#d81b60); border-radius: 0.5rem;">
+                    <div class="chart">
+                        <canvas id="new_tasks_per_month" class="chart-canvas" height="170" width="768" style="display: block; box-sizing: border-box; height: 170px; width: 768px;"></canvas>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-0 ">Всего новых задач</h6>
+                    <p class="text-sm ">Общее количество новых задач по месяцам</p>
+                    <hr class="dark horizontal">
+                    {% if not new_tasks_per_month %}
+                        <div class="d-flex ">
+                            <i class="material-icons text-sm my-auto me-1">schedule</i>
+                            <p class="mb-0 text-sm">Задач ещё нет</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var ctx1 = document.getElementById("new_tasks_per_month").getContext("2d");
+
+            new Chart(ctx1, {
+            type: "line",
+            data: {
+                labels: [{% for tasks in new_tasks_per_month %} '{{ tasks.month|date:'F' }}', {% endfor %}],
+                datasets: [{
+                label: "Новые",
+                tension: 0,
+                borderWidth: 0,
+                pointRadius: 5,
+                pointBackgroundColor: "rgba(255, 255, 255, .8)",
+                pointBorderColor: "transparent",
+                borderColor: "rgba(255, 255, 255, .8)",
+                borderWidth: 4,
+                backgroundColor: "transparent",
+                fill: true,
+                data: [{% for tasks in new_tasks_per_month %} {{ tasks.c|floatformat:"u" }}, {% endfor %}],
+                maxBarThickness: 6
+        
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                legend: {
+                    display: false,
+                }
+                },
+                interaction: {
+                intersect: false,
+                mode: 'index',
+                },
+                scales: {
+                y: {
+                    grid: {
+                    drawBorder: false,
+                    display: true,
+                    drawOnChartArea: true,
+                    drawTicks: false,
+                    borderDash: [5, 5],
+                    color: 'rgba(255, 255, 255, .2)'
+                    },
+                    ticks: {
+                    display: true,
+                    padding: 10,
+                    color: '#f8f9fa',
+                    font: {
+                        size: 14,
+                        weight: 300,
+                        family: "Roboto",
+                        style: 'normal',
+                        lineHeight: 2
+                    },
+                    }
+                },
+                x: {
+                    grid: {
+                    drawBorder: false,
+                    display: false,
+                    drawOnChartArea: false,
+                    drawTicks: false,
+                    borderDash: [5, 5]
+                    },
+                    ticks: {
+                    display: true,
+                    color: '#f8f9fa',
+                    padding: 10,
+                    font: {
+                        size: 14,
+                        weight: 300,
+                        family: "Roboto",
+                        style: 'normal',
+                        lineHeight: 2
+                    },
+                    }
+                },
+                },
+            },
+            });
+    
+        </script>
+
+        <!-- done_tasks_per_month -->
+        <div class="col-lg-6">
+            <div class="card z-index-2 ">
+                <div class="card-header" style="background-image: linear-gradient(195deg, rgb(102, 187, 106), rgb(67, 160, 71)); border-radius: 0.5rem;">
+                    <div class="chart">
+                        <canvas id="done_tasks_per_month" class="chart-canvas" height="170" width="768" style="display: block; box-sizing: border-box; height: 170px; width: 768px;"></canvas>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-0 ">Всего выполненных задач</h6>
+                    <p class="text-sm ">Общее количество выполненных задач по месяцам</p>
+                    <hr class="dark horizontal">
+                    {% if not done_tasks_per_month %}
+                        <div class="d-flex ">
+                            <i class="material-icons text-sm my-auto me-1">schedule</i>
+                            <p class="mb-0 text-sm">Задач ещё нет</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var ctx1 = document.getElementById("done_tasks_per_month").getContext("2d");
+
+            new Chart(ctx1, {
+            type: "line",
+            data: {
+                labels: [{% for tasks in done_tasks_per_month %} '{{ tasks.month|date:'F' }}', {% endfor %}],
+                datasets: [{
+                label: "Выполненные",
+                tension: 0,
+                borderWidth: 0,
+                pointRadius: 5,
+                pointBackgroundColor: "rgba(255, 255, 255, .8)",
+                pointBorderColor: "transparent",
+                borderColor: "rgba(255, 255, 255, .8)",
+                borderWidth: 4,
+                backgroundColor: "transparent",
+                fill: true,
+                data: [{% for tasks in done_tasks_per_month %} {{ tasks.c|floatformat:"u" }}, {% endfor %}],
+                maxBarThickness: 6
+        
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                legend: {
+                    display: false,
+                }
+                },
+                interaction: {
+                intersect: false,
+                mode: 'index',
+                },
+                scales: {
+                y: {
+                    grid: {
+                    drawBorder: false,
+                    display: true,
+                    drawOnChartArea: true,
+                    drawTicks: false,
+                    borderDash: [5, 5],
+                    color: 'rgba(255, 255, 255, .2)'
+                    },
+                    ticks: {
+                    display: true,
+                    padding: 10,
+                    color: '#f8f9fa',
+                    font: {
+                        size: 14,
+                        weight: 300,
+                        family: "Roboto",
+                        style: 'normal',
+                        lineHeight: 2
+                    },
+                    }
+                },
+                x: {
+                    grid: {
+                    drawBorder: false,
+                    display: false,
+                    drawOnChartArea: false,
+                    drawTicks: false,
+                    borderDash: [5, 5]
+                    },
+                    ticks: {
+                    display: true,
+                    color: '#f8f9fa',
+                    padding: 10,
+                    font: {
+                        size: 14,
+                        weight: 300,
+                        family: "Roboto",
+                        style: 'normal',
+                        lineHeight: 2
+                    },
+                    }
+                },
+                },
+            },
+            });
+    
+        </script>
+        
+    </div>
+
+{% endblock %}

@@ -1,5 +1,4 @@
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.http.response import HttpResponseRedirect
 from django.views.generic.edit import UpdateView, CreateView
 from django_filters.views import FilterView
@@ -114,7 +113,6 @@ class TaskEditView(UpdateView):
                 task.performer = request.user
             if button == 'Выполнено':
                 task.status = 'Выполнена'
-                task.date_closed = timezone.localtime()
             if button == 'Отложено':
                 task.status = 'Отложена'
             if button == 'Не задача':

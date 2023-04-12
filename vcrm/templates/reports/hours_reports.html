@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+
+    <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px;">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background-color: #ffffff;">  
+            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main_reports' %}">Отчёты</a></li>
+            <li class="breadcrumb-item text-dark active" aria-current="page"><b>Отчёт по часам</b></li>
+            </ol>
+        </nav>
+    </div>
+    <hr>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    {% for field in form %}
+                        <div class="col-lg-1 form-group">
+                            {{ field.label_tag }}
+
+                            <div class="text-muted">
+                                <p>{{ field.help_text }}</p>
+                            </div>
+                            {% if field.errors %}
+                                <div class="alert alert-danger" style="padding:0">
+                                    <div class="container">
+                                        <div class="alert-icon">
+                                            <i class="material-icons">error_outline</i>
+                                        </div>
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true"><i class="material-icons">clear</i></span>
+                                        </button>
+                                        <b>Ошибка:</b> {{ field.errors }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            {{ field|attr:"class:form-control from-control-lg" }}
+                        </div>
+                    {% endfor %}
+                    <div class="col-lg-2 form-group">
+                        <input class='btn btn-lg btn-block btn-outline-info' type="submit" value="Изменить">
+                    </div>
+                    <div class="col-lg-2 form-group">
+                        <input class='btn btn-lg btn-block btn-outline-info' type="submit" name="to_excel" value="В excel">
+                    </div>
+                </div>
+            </form>
+            {{ table|safe }}
+        </div>
+    </div>
+
+    <style>
+        * {
+        box-sizing: border-box;
+        }
+
+        .dataframe {
+        overflow: hidden;
+        /*display: inline-block;*/ 
+        }
+
+        td, th {
+        border: 1px solid #999;
+        padding: 5px;
+        position: relative;
+        }
+
+        th {
+        background-color: #fff;
+        }
+
+        td:hover::before {
+        background-color: #ffa;
+        content: "";
+        height: 100%;
+        left: -5000px;
+        position: absolute;
+        top: 0;
+        width: 10000px;
+        z-index: -2;
+        }
+
+        td:hover::after {
+        background-color: #ffa;
+        content: "";
+        height: 10000px;
+        left: 0;
+        position: absolute;
+        top: -5000px;
+        width: 100%;
+        z-index: -1;
+        }
+    </style>
+
+{% endblock %}

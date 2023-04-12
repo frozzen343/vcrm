@@ -1,6 +1,7 @@
 from tinymce.models import HTMLField
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 from users.models import User
 from clients.models import Client
@@ -76,6 +77,11 @@ class Task(models.Model):
                 {"status": ("В задаче со статусом 'Выполнена' должен быть "
                             "исполнитель задачи")}
             )
+
+    def save(self, *args, **kwargs):
+        if self.status == 'Выполнена':
+            self.date_closed = timezone.localtime()
+        return super().save(*args, **kwargs)
 
 
 class CommentManager(models.Manager):
