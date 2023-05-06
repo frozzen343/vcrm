@@ -18,7 +18,7 @@ urlpatterns = [
     path('edit/<int:fk>/contacts/',
          ContactListView.as_view(),
          name='contact_list'),
-    re_path(r'^edit/(?P<fk>\d+)/contacts/create/(?P<contact>\w+)?$',
+    re_path(r'^edit/(?P<fk>\d+)/contacts/create/(?P<contact>.*)?$',
             ContactCreateView.as_view(),
             name='contact_create'),
     path('edit/<int:fk>/contacts/edit/<int:pk>',

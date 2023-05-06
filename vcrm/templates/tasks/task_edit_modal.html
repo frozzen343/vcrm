@@ -73,24 +73,21 @@
                             <i class="material-icons">clear</i>
                         </button>
                     </div>
-                    {% comment %} {% if "@" in task.email %}
+                    {% if "@" in task.contacts %}
                         <div class="modal-body">
                             <li class="list-group-item g_field">
-                            <div class="label">Уведомить постановщика задачи</div>
-                            <div class="checkbox-first">
-                                <label for="checkbox-one" class="checkbox-first__label">
-                                    {{form.notice_form_take(id="checkbox-one", type="checkbox", class="checkbox-first__input")}}
-                                <div class="checkbox">
-                                    <svg width="20px" height="20px" viewBox="0 0 20 20">
-                                    <path d="M3,1 L17,1 L17,1 C18.1045695,1 19,1.8954305 19,3 L19,17 L19,17 C19,18.1045695 18.1045695,19 17,19 L3,19 L3,19 C1.8954305,19 1,18.1045695 1,17 L1,3 L1,3 C1,1.8954305 1.8954305,1 3,1 Z"></path>
-                                    <polyline points="4 11 8 15 16 6"></polyline>
-                                    </svg>
-                                </div>
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name="notice_take" type="checkbox" value="">
+                                        Уведомить постановщика задачи
+                                    <span class="form-check-sign">
+                                        <span class="check"></span>
+                                    </span>
                                 </label>
                             </div>
                             </li>
                         </div>
-                    {% endif %} {% endcomment %}
+                    {% endif %}
                     <div class="modal-footer">
                         <input type="submit" class="btn btn-md btn-outline-info mr-2" name="edit_buttons" value="Принять">
                         <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
@@ -110,24 +107,21 @@
                             <i class="material-icons">clear</i>
                         </button>
                     </div>
-                    {% comment %} {% if "@" in task.email %}
-                    <div class="modal-body">
-                        <li class="list-group-item g_field">
-                        <div class="label">Уведомить постановщика задачи</div>
-                        <div class="checkbox-first">
-                            <label for="checkbox-one2" class="checkbox-first__label">
-                                {{form.notice_form_close(id="checkbox-one2", type="checkbox", class="checkbox-first__input")}}
-                            <div class="checkbox">
-                                <svg width="20px" height="20px" viewBox="0 0 20 20">
-                                <path d="M3,1 L17,1 L17,1 C18.1045695,1 19,1.8954305 19,3 L19,17 L19,17 C19,18.1045695 18.1045695,19 17,19 L3,19 L3,19 C1.8954305,19 1,18.1045695 1,17 L1,3 L1,3 C1,1.8954305 1.8954305,1 3,1 Z"></path>
-                                <polyline points="4 11 8 15 16 6"></polyline>
-                                </svg>
+                    {% if "@" in task.contacts %}
+                        <div class="modal-body">
+                            <li class="list-group-item g_field">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name="notice_done" type="checkbox" value="">
+                                        Уведомить постановщика задачи
+                                    <span class="form-check-sign">
+                                        <span class="check"></span>
+                                    </span>
+                                </label>
                             </div>
-                            </label>
+                            </li>
                         </div>
-                        </li>
-                    </div>
-                    {% endif %} {% endcomment %}
+                    {% endif %}
                     <div class="modal-footer">
                         <input type="submit" class="btn btn-md btn-outline-info mr-2" name="edit_buttons" value="Выполнено">
                         <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
@@ -175,97 +169,3 @@
         </div>
     <!--  End Not Task Modal -->
 </form>
-
-    {% comment %} <!-- Mail Task Modal -->
-    <div class="modal fade" id="Modal_mail" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 800px;">
-        <div class="modal-content">
-            <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <i class="material-icons">clear</i>
-            </button>
-            </div>
-
-            <div class="modal-body">
-                {% if message.text_html %}
-                <p><div class="label h3">{{ message.subject }}</div></p>
-                <label class="slidebutton">скрыть\раскрыть всю переписку</label>
-                <hr>
-                <p>
-                    <div class="label"><b>{{ message.from_name }}</b></div>
-                    <div class="text">{{ message.from_ }}</div> 
-                    <div class="text">{{ message.date.strftime('%d-%m-%Y %H:%M:%S') }}</div>
-                    <div class="text" style="margin-left: 20px;">Кому: {{ message.to }}</div>
-                    {% if message.cc|length > 1 %}
-                    <div class="text" style="margin-left: 20px;">Копия: {{ message.cc }}</div>
-                    {% endif %}
-                    
-                </p>
-                <hr>
-                {% if message.attachments|length > 0 %}
-                    <div class="text">Вложения:</div>
-                    {% for k in message.attachments.split(',') %}
-                    <div><a class="text" href = "{{ url_for('static', filename='maildata/%s/%s'|format(message.messageid,k|trim)) }}">{{ k }}</a></div>
-                    {% endfor %}
-                    <hr>
-                {% endif %}
-                {% endif %}
-
-                {{ message.text_html|safe }}
-
-        </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Закрыть</button>
-            </div>
-        </div>
-        </div>
-    </div>
-    <!--  End Mail Task Modal -->
-
-
-    <!-- Add Contact Modal -->
-    <div class="modal fade" id="Modal_Contact_Add_task" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Добавить контакт</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <i class="material-icons">clear</i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <ul class="list-group list-group-flush">
-                    {% if task.client_id is none %}
-                    <li class="list-group-item g_field">
-                        <div class="label">Организация</div>
-                        <div class="text">{{ form_add_contact.organization(class="js-select2", style="width: 200px;") }}</div>
-                    </li>
-                    {% else %}
-                    <div class="text" hidden>{{ form_add_contact.organization(class="js-select2", style="width: 200px;") }}</div>
-                    {% endif %}
-                    
-                    <li class="list-group-item g_field">
-                        <div class="label">Имя, фамилия</div>
-                        <div class="text">{{ form_add_contact.form_fio(class="form-control required from-control-lg") }}</div>
-                    </li>
-                    <li class="list-group-item g_field">
-                        <div class="label">Почта</div>
-                        <div class="text">{{ form_add_contact.form_email(class="form-control required from-control-lg") }}</div>
-                    </li>
-                    <li class="list-group-item g_field">
-                        <div class="label">Другое</div>
-                        <div class="text">{{ form_add_contact.form_other(class="form-control required from-control-lg") }}</div>
-                    </li>
-                </ul>
-            </div>
-            <div class="modal-footer">
-                {{ form_add_contact.submit_add(class="btn btn-md btn-outline-info mr-2") }} 
-                <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
-            </div>
-            </div>
-        </div>
-    </div>
-    <!--  End Add Contact Modal --> {% endcomment %}
-
-
-

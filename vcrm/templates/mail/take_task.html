@@ -1,0 +1,25 @@
+<p><span style="font-size:16px;line-height:24px;">Благодарим вас за обращение в нашу службу поддержки.</span></p>
+<p><span style="font-size:16px;line-height:24px;">Вы будете уведомлены по электронной почте, когда Ваша заявка будет решена или возникнут дополнительные вопросы.</span></p>
+<p><br></p><span style="font-size:16px;line-height:24px;"><ul>
+<li>Заявка № <em>{{ task.id }}</em></li>
+<li>Статус заявки: <span style="color:#ff8c00;"><em>К исполнению</em></span></li>
+<li>Назначенный исполнитель: <em>{{ task.performer.first_name }} {{ task.performer.last_name }}</em></li>
+<li>Почта: <em>{{ task.performer.email }}</em></li>
+</ul></span>
+
+<div>
+</div>
+<div>
+    {{ task.mail.date|date:"d-M-Y" }}, "{{ task.mail.from_name }}" &lt;{{ task.mail.from_email }}&gt;:
+</div> 
+<blockquote>
+    {{ task.mail.text_html|safe }}
+</blockquote>
+
+<p><br></p><p>--</p>
+<div style="font-size:15px">С уважением, команда технической поддержки</div><br> 
+<div style="font-size:15px;color:#008000;">Информационно-технический центр &quot;ВЕСЬ СПЕКТР&quot;</div>
+<div style="font-size:15px">142116, Московская область, г.Подольск, ул. Лобачева, дом 13 офис 216</div><br><br>
+<div style="font-size:15px;">+7 (499) 372-07-77</div><br>
+<div style="font-size:15px;color:#0000ff;"><em><a data-cke-saved-href="http://www.allsp.ru/" href="http://www.allsp.ru/" rel="noopener noreferrer" style="color:rgb( 153 , 0 , 153 );">http://www.allsp.ru</a></em></div>
+<div style="font-size:15px;color:#0000ff;"><em><a data-cke-saved-href="mailto:support@allsp.ru" href="mailto:support@allsp.ru" rel="noopener noreferrer" style="color:rgb( 97 , 85 , 64 );">support@allsp.ru</a></em></div>

@@ -29,6 +29,16 @@
                         {% if field == form.avatar %}
                             {{ field.label_tag }}<br>
                             {{ field }}<br><br>
+                        {% elif field == form.notify_new_tasks or field == form.notify_executor %}
+                            <div class="form-check" style="margin-top: 30px;">
+                                <label class="form-check-label">
+                                    {{ field.label_tag }}
+                                    {{ field|attr:"class:form-check-input" }}
+                                    <span class="form-check-sign">
+                                        <span class="check"></span>
+                                    </span>
+                                </label>
+                            </div>
                         {% else %}
                             <div class="form-group text-left">
                                 {{ field.label_tag }}

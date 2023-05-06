@@ -7,11 +7,7 @@ from clients.models import Contact
 from tasks.models import Task, Comment
 from tasks.filters import TaskFilter
 from tasks.forms import CommentEditForm
-
-
-def add_comment(**params):
-    comment = Comment(**params)
-    comment.save()
+from mail.views import send_mail_notice_task
 
 
 def comment_if_changes(task: object, user: object, fields: list):
@@ -19,13 +15,13 @@ def comment_if_changes(task: object, user: object, fields: list):
         comment = (
             f'<p>Пользователь <b>{user.first_name} {user.last_name}</b> '
             f'изменил трудозатраты на <b>{task.hours_cost}</b></p>')
-        add_comment(task=task, comment=comment)
+        Comment.objects.create(task=task, comment=comment)
 
     if 'status' in fields:
         comment = (
             f'<p>Пользователь <b>{user.first_name} {user.last_name}</b> '
             f'присвоил статус задачи <b>{task.status}</b></p>')
-        add_comment(task=task, comment=comment)
+        Comment.objects.create(task=task, comment=comment)
 
     if 'performer' in fields:
         if task.performer:
@@ -37,7 +33,7 @@ def comment_if_changes(task: object, user: object, fields: list):
         else:
             comment = (f'<p>Пользователь <b>{user.first_name} {user.last_name}'
                        '</b> убрал исполнителя задачи</p>')
-        add_comment(task=task, comment=comment)
+        Comment.objects.create(task=task, comment=comment)
 
 
 class TaskListView(FilterView):
@@ -68,15 +64,16 @@ class TaskCreateView(CreateView):
         comment = (f'Пользователь <b>{self.request.user.first_name} '
                    f'{self.request.user.last_name}</b> создал задачу')
         form.save()
-        add_comment(task=form.instance, comment=comment)
+        Comment.objects.create(task=form.instance, comment=comment)
         return super().form_valid(form)
 
 
 class TaskEditView(UpdateView):
     template_name = 'tasks/task_edit.html'
     model = Task
-    extra_context = {'contacts': Contact.objects.values_list('contact',
-                                                             flat=True)}
+    extra_context = {
+        'contacts': Contact.objects.values_list('contact', flat=True),
+    }
     second_form_class = CommentEditForm
     fields = ['status',
               'hours_cost',
@@ -87,6 +84,8 @@ class TaskEditView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['comments'] = Comment.objects.filter(task=self.object) \
+                                             .order_by('-date_created')
         if self.request.POST:
             context["form2"] = self.second_form_class(self.request.POST)
         else:
@@ -111,12 +110,28 @@ class TaskEditView(UpdateView):
             if button == 'Принять':
                 task.status = 'В работе'
                 task.performer = request.user
+                comment_if_changes(
+                    task=task, user=request.user, fields=['status'])
+                if 'notice_take' in request.POST:
+                    send_mail_notice_task(task, 'mail/take_task.html')
+
             if button == 'Выполнено':
                 task.status = 'Выполнена'
+                comment_if_changes(
+                    task=task, user=request.user, fields=['status'])
+                if 'notice_done' in request.POST:
+                    send_mail_notice_task(task, 'mail/take_done.html')
+
             if button == 'Отложено':
                 task.status = 'Отложена'
+                comment_if_changes(
+                    task=task, user=request.user, fields=['status'])
+
             if button == 'Не задача':
                 task.status = 'Не задача'
+                comment_if_changes(
+                    task=task, user=request.user, fields=['status'])
+
             task.save()
             return HttpResponseRedirect(self.get_success_url())
         return super().post(request, *args, **kwargs)

@@ -74,7 +74,7 @@
     <!-- Task info -->
     <div class="card" style="margin-top: 0px;">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-lg-8">
                 <ul class="list-group list-group-flush" style="padding: 1rem;">
                     <h4 class="Title" style="margin-left: 10px;">Задача №{{ task.id }} <hr/> </h4>
                     <li class="list-group-item g_field" style="align-items: center;">
@@ -110,27 +110,31 @@
                             {% else %} - {% endif %}
                         </div>
                     </li>
-                    {% comment %} {% if task.task_mail.attachments|length > 0 %}
+                    {% if task.mail and task.mail.attachments %}
                         <li class="list-group-item g_field">
                         <div class="text">Вложения</div>
-                        {% for k in task.task_mail.attachments.split(',') %}
-                        <div><a href = "{{ url_for('static', filename='maildata/%s/%s'|format(task.task_mail.messageid,k|trim)) }}">{{ k }}</a></div>
+                        {% for attachment in task.mail.attachments.all %}
+                            {% if not attachment.inline %}
+                                <div><a href = "{{ attachment.file.url }}">{{ attachment.file.name }}</a></div>
+                            {% endif %}
                         {% endfor %}
                         </li>
-                    {% endif %} {% endcomment %}
+                    {% endif %}
                     <li class="list-group-item g_field">
                         <div class="label">Суть задачи</div>
                     </li>
                     <li class="list-group-item g_field">
-                        <div class="text">{{ task.description|safe }}</div>
+                        <iframe id="myIframe" frameborder="0" srcdoc="
+                        {{ task.description|safe }}
+                           "></iframe>
                     </li>         
                 </ul>
             </div>
-            <div class="col-md-4">
+            <div class="col-lg-4">
                 <ul class="list-group list-group-flush" style="padding: 1rem">
                     <h4 class="Title" style="margin-left: 10px;">Клиент<hr/></h4>
                     {% if task.client %}
-                        {% if task.contacts not in contacts %} 
+                        {% if task.contacts not in contacts.all %} 
                             <li class="list-group-item g_field">
                                 <a href="{% url 'contact_create' fk=task.client.pk contact=task.contacts %}" class="btn btn-outline-secondary btn-sm" role="button" style="margin-left: 2rem;">
                                     Привязать контакт к клиенту
@@ -155,7 +159,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Comments -->
     <div class="card">
         <div class="col-md-12">
@@ -166,7 +170,7 @@
                     <div class="tab-pane active" id="schedule-1">
                         <table class="table">
                             <tbody>
-                                {% for comment in task.comment_task.all %}
+                                {% for comment in comments %}
                                     <tr>
                                         <td width="20%">
                                             <div class="d-flex px-2 py-1">
@@ -198,5 +202,7 @@
             </ul>
         </div>
     </div>
+
+    
 
 {% endblock %}

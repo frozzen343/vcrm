@@ -52,7 +52,10 @@ class LoginView(LoginView):
 class UserProfileView(LoginRequiredMixin, UpdateView):
     model = User
     template_name = 'users/profile.html'
-    fields = ['first_name', 'last_name', 'email', 'avatar']
+    fields = ['first_name', 'last_name',
+              'email',
+              'avatar',
+              'notify_new_tasks']
 
     def dispatch(self, request, *args, **kwargs):
         if kwargs['pk'] != request.user.id:

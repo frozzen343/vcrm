@@ -49,6 +49,8 @@ class User(AbstractBaseUser, PermissionsMixin):
                                blank=False,
                                upload_to='profile_images',
                                default='default_avatar.png')
+    notify_new_tasks = models.BooleanField(
+        'Уведомлять на почту о новых задачах', default=False)
 
     objects = UserManager()
 

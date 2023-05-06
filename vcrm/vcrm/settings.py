@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'tasks',
     'clients',
     'reports',
+    'mail',
 ]
 
 MIDDLEWARE = [
@@ -99,16 +100,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'NumericPasswordValidator',
     },
 ]
 
@@ -147,3 +152,10 @@ AUTH_USER_MODEL = 'users.User'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'main'
 LOGOUT_REDIRECT_URL = "login"
+
+
+EMAIL_HOST = getenv('SMTP_SERVER')
+EMAIL_HOST_USER = getenv('EMAIL')
+EMAIL_HOST_PASSWORD = getenv('EMAIL_PASSWORD')
+EMAIL_USE_TLS = getenv('USE_SSL_TLS') == 'True'
+DEFAULT_FROM_EMAIL = f'{getenv("EMAIL_NAME")} <{getenv("EMAIL")}>'

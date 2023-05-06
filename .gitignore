@@ -17,3 +17,4 @@ __pycache__/
 
 # local settings
 profile_images/
+mail_media/

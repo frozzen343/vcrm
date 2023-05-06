@@ -2,9 +2,12 @@ from tinymce.models import HTMLField
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.core.mail import send_mail
+from os import getenv
 
 from users.models import User
 from clients.models import Client
+from mail.models import Mail
 
 
 TASK_STATUS_CHOICES = (
@@ -17,9 +20,6 @@ TASK_STATUS_CHOICES = (
 
 
 class Task(models.Model):
-    # TODO:
-    #     клиенты (постановщик, контакты, организация)
-    #     почта
     title = models.CharField(
         'Заголовок', max_length=254, unique=False, blank=False)
     hours_cost = models.DecimalField('Трудозатраты в часах',
@@ -54,9 +54,20 @@ class Task(models.Model):
                                on_delete=models.SET_NULL,
                                related_name='task_client',
                                verbose_name='Клиент')
+    mail = models.ForeignKey(Mail,
+                             null=True,
+                             blank=True,
+                             on_delete=models.SET_NULL,
+                             related_name='task')
+
+    __original_status = None
 
     def __str__(self):
         return self.title
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__original_status = self.status
 
     def clean(self):
         if self.status == 'Новая' and self.performer:
@@ -79,9 +90,31 @@ class Task(models.Model):
             )
 
     def save(self, *args, **kwargs):
-        if self.status == 'Выполнена':
-            self.date_closed = timezone.localtime()
-        return super().save(*args, **kwargs)
+        if not self.pk:  # on create
+            self.notify_users()
+        if self.status != self.__original_status:
+            if self.status == 'Выполнена':
+                self.date_closed = timezone.localtime()
+        super().save(*args, **kwargs)
+        self.__original_status = self.status
+
+    def notify_users(self):
+        if getenv('IMAP_SERVER'):
+            users = User.objects.all()
+            for user in users:
+                if user.notify_new_tasks:
+                    subject = f'VCRM: Новая задача: {self.title}'
+                    message = ('Уведомление сформировано'
+                               'и отправлено автоматически с помощью "VCRM')
+
+                    message_html = (f'{self.description}<br><br>Уведомление '
+                                    'сформировано и отправлено автоматически '
+                                    'с помощью "VCRM"')
+                    send_mail(subject,
+                              message,
+                              html_message=message_html,
+                              from_email=None,
+                              recipient_list=[user.email])
 
 
 class CommentManager(models.Manager):
@@ -102,7 +135,7 @@ class Comment(models.Model):
                                   blank=True,
                                   on_delete=models.SET_NULL,
                                   related_name='comment_performer')
-    user_comments = CommentManager()
+    objects = CommentManager()
 
     def __str__(self):
         return self.performer

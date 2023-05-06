@@ -26,6 +26,7 @@ urlpatterns = [
     path('tasks/', include('tasks.urls')),
     path('clients/', include('clients.urls')),
     path('reports/', include('reports.urls')),
+    path('mail/', include('mail.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
