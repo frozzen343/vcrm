@@ -56,26 +56,28 @@
                         <a href="{% url 'user_changepass' pk=user_ed.pk  %}" class="nav-link">Изменить пароль</a>
                     </div>
 
-                    <p class="text-muted">Права:</p>
-                    {% for group in user_ed.groups.all %}
-                        <div class="form-group">
-                            <span class="badge badge-pill badge-success">{{ group.name }}</span>
-                            <a href="{% url 'group_del' user_id=user_ed.pk group_id=group.id %}" role="button">
-                                <i class="material-icons text-danger">close</i>
-                            </a>
-                        </div>
-                    {% endfor %}
-                    
-                    {% for group in groups.all %}
-                        {% if group not in user_ed.groups.all %}
+                    {% if 'auth.change_permission' in perms %}
+                        <p class="text-muted">Права:</p>
+                        {% for group in user_ed.groups.all %}
                             <div class="form-group">
-                                <span class="badge badge-pill badge-info">{{ group.name }}</span>
-                                <a href="{% url 'group_add' user_id=user_ed.pk group_id=group.id %}" role="button">
-                                    <i class="material-icons text-success">add</i>
+                                <span class="badge badge-pill badge-success">{{ group.name }}</span>
+                                <a href="{% url 'group_del' user_id=user_ed.pk group_id=group.id %}" role="button">
+                                    <i class="material-icons text-danger">close</i>
                                 </a>
                             </div>
-                        {% endif %}
-                    {% endfor %}
+                        {% endfor %}
+
+                        {% for group in groups.all %}
+                            {% if group not in user_ed.groups.all %}
+                                <div class="form-group">
+                                    <span class="badge badge-pill badge-info">{{ group.name }}</span>
+                                    <a href="{% url 'group_add' user_id=user_ed.pk group_id=group.id %}" role="button">
+                                        <i class="material-icons text-success">add</i>
+                                    </a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
 
                     <div class="form-group">
                         <input class='btn btn-lg btn-block btn-outline-info' type="submit" value="Сохранить">

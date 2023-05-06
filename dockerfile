@@ -8,6 +8,4 @@ WORKDIR /src
 
 EXPOSE 8000
 
-RUN chmod +x ./docker/entrypoint.sh
-RUN chmod +x ./docker/wait
-ENTRYPOINT ./docker/wait && bash ./docker/entrypoint.sh
+ENTRYPOINT chmod +x ./docker/wait && ./docker/wait && bash ./docker/entrypoint.sh

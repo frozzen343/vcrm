@@ -27,7 +27,7 @@ def background(request):
 
 
 def group_delete(request, user_id, group_id):
-    if not request.user.has_perm('users.change_user'):
+    if not request.user.has_perm('auth.change_permission'):
         raise PermissionDenied()
     user = get_object_or_404(User, pk=user_id)
     user.groups.remove(group_id)
@@ -36,7 +36,7 @@ def group_delete(request, user_id, group_id):
 
 
 def group_add(request, user_id, group_id):
-    if not request.user.has_perm('users.change_user'):
+    if not request.user.has_perm('auth.change_permission'):
         raise PermissionDenied()
     user = get_object_or_404(User, pk=user_id)
     user.groups.add(group_id)

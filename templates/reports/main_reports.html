@@ -12,10 +12,11 @@
     </div>
     <hr>
 
-    <!-- TODO: permissions -->
-    <a href="{% url 'hours_reports' %}" class="custom-btn btn-16">
-        <span class="material-icons">list</span>Отчёт по часам
-    </a>
+    {% if 'reports.view_users_report' in perms %}
+        <a href="{% url 'hours_reports' %}" class="custom-btn btn-16">
+            <span class="material-icons">list</span>Отчёт по часам
+        </a>
+    {% endif %}
 
     <div class="row">
 

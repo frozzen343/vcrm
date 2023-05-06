@@ -3,6 +3,7 @@ from django.db.models.functions import TruncMonth
 from django.db.models import Sum, Count
 from django.http import HttpResponse
 from django.utils import timezone
+from django.core.exceptions import PermissionDenied
 from io import BytesIO
 import pandas as pd
 
@@ -93,6 +94,9 @@ def main_reports(request):
 
 def hours_reports(request):
     template_name = 'reports/hours_reports.html'
+
+    if not request.user.has_perm('reports.view_users_report'):
+        raise PermissionDenied()
 
     if request.method == 'POST':
         form = HoursReportForm(request.POST)
