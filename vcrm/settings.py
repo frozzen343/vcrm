@@ -160,3 +160,9 @@ EMAIL_HOST_USER = getenv('EMAIL')
 EMAIL_HOST_PASSWORD = getenv('EMAIL_PASSWORD')
 EMAIL_USE_TLS = getenv('USE_SSL_TLS') == 'True'
 DEFAULT_FROM_EMAIL = f'{getenv("EMAIL_NAME")} <{getenv("EMAIL")}>'
+
+REDIS_HOST = getenv('REDIS_HOST', default='127.0.0.1')
+REDIS_PORT = getenv('REDIS_PORT', default='6379')
+BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/1'
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/2'

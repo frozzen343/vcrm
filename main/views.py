@@ -6,14 +6,6 @@ from django.contrib.auth.decorators import login_required
 from tasks.models import Task
 
 
-# def db_backup(request):
-#     from django.http import HttpResponse
-#     from django.core.management import call_command
-#     call_command('loaddata', 'dumped_data.json')  # <
-#     call_command('dumpdata --indent=4', 'dumped_data.json')  # >
-#     return HttpResponse("Hello")
-
-
 @login_required
 def main(request):
     start = timezone.now()
