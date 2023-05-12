@@ -16,7 +16,6 @@ __pycache__/
 .pytest_cache
 
 # local settings
-.env
 backup_db.json
 celerybeat-schedule
 profile_images/

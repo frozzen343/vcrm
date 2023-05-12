@@ -2,13 +2,16 @@
 {% load widget_tweaks %}
 {% block content %}
 
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb" style="background-color: #ffffff;">
-            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
-            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'task_list' %}">Задачи</a></li>
-            <li class="breadcrumb-item text-dark active" aria-current="page"><b>Добавить задачу</b></li>
-        </ol>
-    </nav>
+    <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background-color: #ffffff;">
+                <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+                <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'task_list' %}">Задачи</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page"><b>Добавить задачу</b></li>
+            </ol>
+        </nav>
+    </div>
+    <hr>
 
     <div class="card">
         <div class="card-body">

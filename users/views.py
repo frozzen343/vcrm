@@ -27,24 +27,24 @@ def background(request):
 
 
 def group_delete(request, user_id, group_id):
-    if not request.user.has_perm('auth.change_permission'):
-        raise PermissionDenied()
-    user = get_object_or_404(User, pk=user_id)
-    user.groups.remove(group_id)
-    success_url = reverse_lazy("user_edit", kwargs={'pk': user_id})
-    return HttpResponseRedirect(success_url)
+    if request.user.has_perm('auth.change_permission'):
+        user = get_object_or_404(User, pk=user_id)
+        user.groups.remove(group_id)
+        success_url = reverse_lazy("user_edit", kwargs={'pk': user_id})
+        return HttpResponseRedirect(success_url)
+    raise PermissionDenied()
 
 
 def group_add(request, user_id, group_id):
-    if not request.user.has_perm('auth.change_permission'):
-        raise PermissionDenied()
-    user = get_object_or_404(User, pk=user_id)
-    user.groups.add(group_id)
-    success_url = reverse_lazy("user_edit", kwargs={'pk': user_id})
-    return HttpResponseRedirect(success_url)
+    if request.user.has_perm('auth.change_permission'):
+        user = get_object_or_404(User, pk=user_id)
+        user.groups.add(group_id)
+        success_url = reverse_lazy("user_edit", kwargs={'pk': user_id})
+        return HttpResponseRedirect(success_url)
+    raise PermissionDenied()
 
 
-class LoginView(LoginView):
+class UserLoginView(LoginView):
     form_class = AuthenticationForm
     redirect_authenticated_user = True
 

@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.files import File
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
+from django.utils import timezone
 from django.template.loader import render_to_string
 from email.mime.base import MIMEBase
 from email import encoders
@@ -12,7 +13,7 @@ import io
 
 from mail.models import Attachment
 from tasks.models import Task, Comment
-from clients.models import Contact
+from clients.models import Contact, Client
 
 
 def send_mail_notice_task(task, template):
@@ -63,6 +64,11 @@ def create_task_from_mail(subject, text, from_email, mail):
     contact = Contact.objects.filter(contact=from_email).first()
     if contact:
         task.client = contact.client
+        contact.last_activity = timezone.now()
+        contact.save()
+        client = Client.objects.get(id=contact.client_id)
+        client.last_activity = timezone.now()
+        client.save()
     task.save()
     Comment.objects.create(
         task=task, comment='<p>Задача создана автоматически<p>')

@@ -2,12 +2,16 @@
 {% load widget_tweaks %}
 {% block content %}
 
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb" style="background-color: #ffffff;">
-        <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
-        <li class="breadcrumb-item text-dark active" aria-current="page"><b>Профиль</b></li>
-        </ol>
-    </nav>
+    <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background-color: #ffffff;">
+                <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page"><b>Профиль</b></li>
+            </ol>
+        </nav>
+    </div>
+    <hr>
+
     <div class="card">
         <div class="card-body">
             <form method="POST" enctype="multipart/form-data">
@@ -69,26 +73,6 @@
                     <div class="form-group">
                         <a href="{% url 'user_changepass' pk=user.pk  %}" class="nav-link">Изменить пароль</a>
                     </div>
-
-                    {% comment %} <div class="form-group text-left">
-                        <div class="form-check">
-                            {{form.notify_new_tasks(class="form-check-input")}}
-                            {{form.notify_new_tasks.label(class="form-check-label")}}
-                            <span class="form-check-sign">
-                                <span class="check"></span>
-                                </span>
-                        </div>
-                    </div>
-
-                    <div class="form-group text-left">
-                        <div class="form-check">
-                            {{form.notify_executor(class="form-check-input")}}
-                            {{form.notify_executor.label(class="form-check-label")}}
-                            <span class="form-check-sign">
-                                <span class="check"></span>
-                                </span>
-                        </div>
-                    </div> {% endcomment %}
 
                     <div class="form-group">
                         <input class='btn btn-lg btn-block btn-outline-info' type="submit" value="Сохранить">

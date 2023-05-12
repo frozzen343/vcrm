@@ -16,7 +16,7 @@ app.autodiscover_tasks()
 
 @app.on_after_finalize.connect
 def setup_periodic_backup(sender, **kwargs):
-    # Executes every Saturday morning at 4:30 a.m.
+    # Executes every saturday morning at 4:30 a.m.
     sender.add_periodic_task(
         crontab(hour=7, minute=30, day_of_week='saturday'),
         make_backup.s(),
@@ -26,7 +26,6 @@ def setup_periodic_backup(sender, **kwargs):
 @app.task
 def make_backup():
     # call_command('loaddata', 'backups/backup_db.json')
-    print('send backup')
     with open("backups/backup_db.json", "w") as f:
         call_command('dumpdata', '--indent=4', stdout=f)
 

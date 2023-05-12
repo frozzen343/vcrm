@@ -3,41 +3,44 @@
 {% block content %}
     
     <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb" style="background-color: #ffffff;">  
-        <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
-        <li class="breadcrumb-item text-dark active" aria-current="page"><b>Клиенты</b></li>
-        </ol>
-    </nav>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background-color: #ffffff;">
+            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+            <li class="breadcrumb-item text-dark active" aria-current="page"><b>Клиенты</b></li>
+            </ol>
+        </nav>
     </div>
     <hr>
 
-    <div class="row" style="justify-content: flex-end;">
-        <a href="{% url 'client_create' %}" class="custom-btn btn-16" role="button">
-            <i class="material-icons">add</i>
-            Добавить клиента
-        </a>
+    <div class="card crystal" style="margin-top: 0px; margin-bottom: 0;">
+        <div class="card-body">
+            <div class="col-lg-12">
+
+              <div class="row">
+                <a href="{% url 'client_create' %}" class="custom-btn btn-16" role="button">
+                    <i class="material-icons">add</i>
+                    Добавить клиента
+                </a>
+              </div>
+
+            </div>
+        </div>
     </div>
+
     {% if not clients %}       
         <div class="container text-center pt-4">
             <div><span data-feather="eye-off"></span></div>
             <p>Список клиентов не заполнен</p>
         </div> 
     {% else %}
-        <div class="row">
-            <div class="card" style="margin-top: 5px;">
+        <div class="card" style="margin-top: 0px; margin-bottom: 0;">
+
                 <div class="table-responsive">
                     <table class="table align-items-center mb-0">
                         <thead>
                             <tr>                    
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="cursor: pointer; vertical-align: middle;"
-                                    onclick="Animate_Arrow('_client_name'); window.location.href='#';">Список клиентов
-                                    <span class="arrow" id="arrow_client_name"><span></span><span></span></span>
-                                </th>
-                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="cursor: pointer;"
-                                    onclick="Animate_Arrow('_date_activity'); window.location.href='#';">Последняя активность
-                                    <span class="arrow" id="arrow_date_activity"><span></span><span></span></span>
-                                </th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Список клиентов</th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Последняя активность</th>
                             </tr>
                         </thead>
                         {% for client in clients %}
@@ -86,7 +89,7 @@
                         </div>
                     </div>
                 {% endif %}
-            </div>
+
         </div>
     {% endif %}
 

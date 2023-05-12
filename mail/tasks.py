@@ -9,7 +9,7 @@ from mail.views import download_attachments, create_task_from_mail
 
 @app.on_after_finalize.connect
 def setup_periodic_get_mail(sender, **kwargs):
-    sender.add_periodic_task(120.0, mail_get.s())
+    sender.add_periodic_task(60.0, mail_get.s())
 
 
 @app.task

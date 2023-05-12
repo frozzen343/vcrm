@@ -2,12 +2,11 @@
 {% load widget_tweaks %}
 {% block content %}
 
-    <!-- TODO: разные бредкремпы везде -->
-    <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px;">
+    <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb" style="background-color: #ffffff;">  
-            <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
-            <li class="breadcrumb-item text-dark active" aria-current="page"><b>Задачи</b></li>
+            <ol class="breadcrumb" style="background-color: #ffffff;">
+                <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page"><b>Задачи</b></li>
             </ol>
         </nav>
     </div>
@@ -49,10 +48,7 @@
                       <th data-sort-method='none' class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Заголовок</th>
                       <th data-sort-method='none' class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Статус</th>
                       <th data-sort-method='none' class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ответственный</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="cursor: pointer;"
-                            onclick="Animate_Arrow('_date_created');">Поставлена
-                            <span class="arrow" id="arrow_date_created"><span></span><span></span></span>
-                      </th>
+                      <th data-sort-method='none' class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Поставлена</th>
                     </tr>
                   </thead>
       
@@ -72,9 +68,9 @@
                           <div>
                             <img src="http://cdn.onlinewebfonts.com/svg/img_110805.png" style="height: auto; width: 36px; margin-right: 3px;" class="avatar avatar-sm me-3">
                           </div>
-                          <div class="d-flex flex-column justify-content-center"> <!--TODO clients-->
-                            <h6 class="mb-0 text-xs">{% if task.sender %}{{ task.sender }}{% else %}{{ task.company }}{% endif %}</h6>
-                            <p class="text-xs text-secondary mb-0">{{ task.email }}</p>
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-xs">{{ task.contacts }}</h6>
+                            <p class="text-xs text-secondary mb-0">{{ task.client.name }}</p>
                           </div>
                         </div>
                       </td>
@@ -151,8 +147,5 @@
               {% endif %}
         </div>
     </div>
-
-
-    <script> new Tablesort(document.getElementById('table_sort')); </script>
 
 {% endblock %}

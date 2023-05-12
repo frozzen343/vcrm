@@ -100,7 +100,7 @@ class Task(models.Model):
 
     def notify_users(self):
         if getenv('IMAP_SERVER'):
-            users = User.objects.all()
+            users = User.objects.filter(is_active=True).all()
             for user in users:
                 if user.notify_new_tasks:
                     subject = f'VCRM: Новая задача: {self.title}'

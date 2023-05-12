@@ -32,7 +32,7 @@
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse">
-          <div id="showdate" class="ml-auto h4" style="margin-right: 3px;"></div>  <!-- часы -->              
+          <div id="showtime" class="ml-auto h4" style="margin-right: 3px;"></div>  <!-- часы -->
           <ul class="navbar-nav ml-auto">
             
             <li class="nav-item">
@@ -49,7 +49,6 @@
                 <a href="{% url 'task_list' %}" class="dropdown-item">Все</a>
               </div>
             </li>
-
             <li class="dropdown nav-item">
               <a href="javascript:;" class="dropdown-toggle nav-link" data-toggle="dropdown">Меню</a>
               <div class="dropdown-menu">
@@ -57,12 +56,6 @@
                 <a href="{% url 'main_reports' %}" class="dropdown-item">Отчеты</a>
               </div>
             </li>
-
-            <!-- email ?
-            <li class="nav-item">
-                <i class="material-icons">email</i>
-            </li>
-            --> 
             <li class="dropdown nav-item">
               <a href="javascript:;" style="padding: 1px;" class="dropdown-toggle nav-link" data-toggle="dropdown">
 
@@ -79,27 +72,18 @@
               </div>
             </li>
           </ul>
-        </div><!-- /.navbar-collapse -->
-      </div><!-- /.container-->
+        </div>
+      </div>
     </nav>
 
 
 
     <div class="container-fluid">
       <div class="container">
-        {% comment %} {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-              {% for category, message in messages %}
-                  <div class="alert alert-{{ category }}">
-                      {{ message }}
-                  </div>
-              {% endfor %}
-          {% endif %}
-        {% endwith %} {% endcomment %}
 
-        <!-- <div id="content"></div> -->
-        {% block content %}{% endblock %}
-        <div class="ajax_indicator"></div>
+          {% block content %}{% endblock %}
+          <div class="ajax_indicator"></div>
+
       </div>
     </div>
 
