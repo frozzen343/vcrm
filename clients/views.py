@@ -59,7 +59,7 @@ class ContactListView(ListView):
 class ContactCreateView(CreateView):
     template_name = 'clients/contact_create.html'
     model = Contact
-    fields = ['contact', 'fio', 'client', 'description']
+    fields = ['contact', 'fio', 'description']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -72,6 +72,14 @@ class ContactCreateView(CreateView):
             data['contact'] = self.kwargs['contact']
         return data
 
+    def dispatch(self, request, *args, **kwargs):
+        self.client = Client.objects.get(id=self.kwargs['fk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.client = self.client
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse_lazy("contact_list", kwargs={'fk': self.kwargs['fk']})
 
@@ -79,7 +87,7 @@ class ContactCreateView(CreateView):
 class ContactEditView(UpdateView):
     template_name = 'clients/contact_edit.html'
     model = Contact
-    fields = ['contact', 'fio', 'client', 'description']
+    fields = ['contact', 'fio', 'description']
 
     def get_success_url(self):
         return reverse_lazy("contact_list", kwargs={'fk': self.kwargs['fk']})

@@ -16,6 +16,10 @@ class Mail(models.Model):
     def __str__(self):
         return self.subject
 
+    class Meta:
+        verbose_name = 'Письмо'
+        verbose_name_plural = "Почта"
+
 
 class Attachment(models.Model):
     file = models.ImageField("Вложение", null=False, upload_to='mail_media')
@@ -27,3 +31,7 @@ class Attachment(models.Model):
 
     def __str__(self):
         return self.file
+
+    class Meta:
+        verbose_name = 'Вложение'
+        verbose_name_plural = "Список вложений к почте"

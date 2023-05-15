@@ -62,6 +62,10 @@ class Task(models.Model):
 
     __original_status = None
 
+    class Meta:
+        verbose_name = 'Задача'
+        verbose_name_plural = "Список задач"
+
     def __str__(self):
         return self.title
 
@@ -137,5 +141,9 @@ class Comment(models.Model):
                                   related_name='comment_performer')
     objects = CommentManager()
 
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = "Список комментариев"
+
     def __str__(self):
-        return self.performer
+        return self.date_created.strftime('%m.%d.%Y %H:%M')

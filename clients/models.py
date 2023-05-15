@@ -1,8 +1,5 @@
 from tinymce.models import HTMLField
 from django.db import models
-# from django.core.exceptions import ValidationError
-
-# from users.models import User
 
 
 class Client(models.Model):
@@ -20,6 +17,10 @@ class Client(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Клиент'
+        verbose_name_plural = "Список клиентов"
 
 
 class Contact(models.Model):
@@ -39,3 +40,7 @@ class Contact(models.Model):
 
     def __str__(self):
         return self.contact
+
+    class Meta:
+        verbose_name = 'Контакты'
+        verbose_name_plural = "Список контактов"
