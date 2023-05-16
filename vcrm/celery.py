@@ -39,4 +39,3 @@ def make_backup():
         )
         email.attach_file('backups/backup_db.json')
         email.send()
-
