@@ -7,6 +7,7 @@ networks:
 volumes:
   pdata:
   static:
+  media:
 
 
 services:    
@@ -30,6 +31,7 @@ services:
      volumes:
        - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
        - static:/src/static
+       - media:/src/media
      networks:
        - local
 
@@ -67,3 +69,4 @@ services:
     volumes:
       - .:/src
       - static:/src/static
+      - media:/src/media
