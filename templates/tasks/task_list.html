@@ -23,12 +23,23 @@
                         </a>
                     </div>
                     {% for field in filter.form %}
-                    <div class="col-lg-2">
-                        <div class="form-group text-left">
-                            {{ field.label_tag }}
-                            {{ field|attr:"class:form-control from-control-lg" }}
-                        </div>
-                    </div>
+                        {% if field == filter.form.performer %}
+                            {% if 'perms.view_other_users_tasks' in perms %}
+                                <div class="col-lg-2">
+                                    <div class="form-group text-left">
+                                        {{ field.label_tag }}
+                                        {{ field|attr:"class:form-control from-control-lg" }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="col-lg-2">
+                                <div class="form-group text-left">
+                                    {{ field.label_tag }}
+                                    {{ field|attr:"class:form-control from-control-lg" }}
+                                </div>
+                            </div>
+                        {% endif %}
                     {% endfor %}
                     <div class="col-lg-2">
                         <button type="submit" class="custom-btn btn-16">Фильтр</button>
@@ -49,6 +60,7 @@
                       <th data-sort-method='none' class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Статус</th>
                       <th data-sort-method='none' class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ответственный</th>
                       <th data-sort-method='none' class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Поставлена</th>
+                      <th data-sort-method='none' class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Закрыта</th>
                     </tr>
                   </thead>
       
@@ -63,7 +75,7 @@
                   <tbody>
                     {% for task in tasks.all %}
                     <tr style="cursor: pointer;" onclick="window.location.href='{% url 'task_edit' pk=task.id %}'">
-                      <td aria-label="Постановщик" class="col-lg-3">
+                      <td aria-label="Постановщик" class="col-lg-2">
                         <div class="d-flex px-2 py-1">
                           <div>
                             <img src="http://cdn.onlinewebfonts.com/svg/img_110805.png" style="height: auto; width: 36px; margin-right: 3px;" class="avatar avatar-sm me-3">
@@ -86,7 +98,7 @@
                           </p>
                         </div>
                       </td>
-                      <td aria-label="Статус" class="align-middle text-center text-sm col-lg-1">
+                      <td aria-label="Статус" class="col-lg-1 align-middle text-center text-sm">
                         <span class="badge badge-pill
                               {% if task.status == 'Новая' %} badge-default
                               {% elif task.status == 'В работе' %} badge-warning
@@ -101,7 +113,7 @@
                           <span class="material-icons" style="margin-left:0cm">local_fire_department</span>
                           {% endif %}
                       </td>
-                      <td aria-label="Ответственный" class="align-middle text-center text-sm col-lg-2">
+                      <td aria-label="Ответственный" class="col-lg-2 align-middle text-center text-sm">
                         <div style="font-size: 13px;">
                           {% if task.performer %}
                             <img src="{{ task.performer.avatar.url }}" style="height: auto; width: 31px; margin-right: 3px;" alt="Avatar">
@@ -110,8 +122,11 @@
                           {% endif %}
                         </div>
                       </td>
-                      <td aria-label="Поставлена" class="align-middle text-center col-lg-2">
+                      <td aria-label="Поставлена" class="col-lg-2 align-middle text-center">
                         <span class="text-secondary text-xs font-weight-bold">{{ task.date_created }}</span>
+                      </td>
+                      <td aria-label="Закрыта" class="col-lg-2 align-middle text-center">
+                        <span class="text-secondary text-xs font-weight-bold">{{ task.date_closed|default:"-" }}</span>
                       </td>
                     </tr>
                     {% endfor %}

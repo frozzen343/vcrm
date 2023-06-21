@@ -441,8 +441,54 @@
     }
 },
 {
+    "model": "auth.permission",
+    "pk": 50,
+    "fields": {
+        "name": "Can view tasks other users",
+        "content_type": 13,
+        "codename": "view_other_users_tasks"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 51,
+    "fields": {
+        "name": "Can edit closed task",
+        "content_type": 13,
+        "codename": "edit_closed_task"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 52,
+    "fields": {
+        "name": "Can change performer",
+        "content_type": 13,
+        "codename": "change_performer"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 53,
+    "fields": {
+        "name": "Can edit vcrm settings",
+        "content_type": 14,
+        "codename": "edit_settings"
+    }
+},
+{
     "model": "auth.group",
     "pk": 1,
+    "fields": {
+        "name": "Редактирование настроек vcrm",
+        "permissions": [
+            53
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 2,
     "fields": {
         "name": "Управление пользователями",
         "permissions": [
@@ -455,7 +501,7 @@
 },
 {
     "model": "auth.group",
-    "pk": 2,
+    "pk": 3,
     "fields": {
         "name": "Управление правами пользователей",
         "permissions": [
@@ -468,9 +514,49 @@
 },
 {
     "model": "auth.group",
-    "pk": 3,
+    "pk": 4,
     "fields": {
-        "name": "Управление клиентами",
+        "name": "Просмотр детализированных отчетов",
+        "permissions": [
+            49
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 5,
+    "fields": {
+        "name": "Просмотр задач других пользователей",
+        "permissions": [
+            50
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 6,
+    "fields": {
+        "name": "Редактирование закрытых задач",
+        "permissions": [
+            51
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 7,
+    "fields": {
+        "name": "Изменение исполнителя задач",
+        "permissions": [
+            52
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 8,
+    "fields": {
+        "name": "Редактирование клиентов",
         "permissions": [
             33,
             34,
@@ -481,11 +567,14 @@
 },
 {
     "model": "auth.group",
-    "pk": 4,
+    "pk": 9,
     "fields": {
-        "name": "Просмотр детализированных отчетов",
+        "name": "Редактирование контактов",
         "permissions": [
-            49
+            37,
+            38,
+            39,
+            40
         ]
     }
 },
@@ -589,8 +678,16 @@
     "model": "contenttypes.contenttype",
     "pk": 13,
     "fields": {
-        "app_label": "reports",
-        "model": "report"
+        "app_label": "perms",
+        "model": "task"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "pk": 14,
+    "fields": {
+        "app_label": "settings",
+        "model": "email"
     }
 }
 ]

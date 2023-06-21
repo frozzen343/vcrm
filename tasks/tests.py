@@ -15,6 +15,8 @@ class TestTasks(TestCase):
     def setUp(self):
         self.user = baker.make(User, is_superuser=False,
                                is_staff=False, is_active=True)
+        self.other_user = baker.make(User, is_superuser=False,
+                                     is_staff=False, is_active=True)
         self.client.force_login(User.objects.get(id=self.user.id))
 
     def test_task_list_view(self):
@@ -67,7 +69,7 @@ class TestTasks(TestCase):
 
     def test_task_edit_view_get(self):
         """TaskEditView test"""
-        task = baker.make(Task)
+        task = baker.make(Task, performer=self.user)
         response = self.client.get(reverse('task_edit',
                                            kwargs={'pk': task.pk}))
         self.assertEqual(response.status_code, 200)
@@ -77,9 +79,15 @@ class TestTasks(TestCase):
         self.assertIn('contacts', response.context)
         self.assertTemplateUsed(response, 'tasks/task_edit.html')
 
+    def test_task_edit_view_get_permission_error(self):
+        task = baker.make(Task, performer=self.other_user)
+        response = self.client.get(reverse('task_edit',
+                                           kwargs={'pk': task.pk}))
+        self.assertEqual(response.status_code, 403)
+
     def test_task_edit_view_post(self):
         """TaskEditView test"""
-        task = baker.make(Task)
+        task = baker.make(Task, performer=self.user)
         data = {
             'performer': self.user.pk,
             'status': 'Выполнена',
@@ -94,9 +102,19 @@ class TestTasks(TestCase):
                          data['hours_cost'])
         self.assertEqual(Task.objects.get(pk=task.pk).status, data['status'])
 
+    def test_task_edit_view_post_perm_error(self):
+        task = baker.make(Task, status='В работе', performer=self.user)
+        data = {'performer': self.other_user.pk,
+                'status': 'Выполнена',
+                'hours_cost': 10,
+                'description': 'New description'}
+        response = self.client.post(reverse('task_edit',
+                                            kwargs={'pk': task.pk}), data=data)
+        self.assertEqual(response.status_code, 403)
+
     def test_task_edit_view_comments(self):
         """TaskEditView test"""
-        task = baker.make(Task)
+        task = baker.make(Task, performer=self.user)
         data = {'comment': 'Test comment',
                 'add_comment': 'Добавить'}
         response = self.client.post(reverse('task_edit',
@@ -109,16 +127,12 @@ class TestTasks(TestCase):
 
     def test_task_edit_view_buttons(self):
         """TaskEditView test"""
-        task = baker.make(Task)
+        task = baker.make(Task, performer=self.user)
         url = reverse('task_edit', kwargs={'pk': task.pk})
 
         response = self.client.post(url, {'edit_buttons': 'Принять'})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Task.objects.get(pk=task.pk).status, 'В работе')
-
-        response = self.client.post(url, {'edit_buttons': 'Выполнено'})
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(Task.objects.get(pk=task.pk).status, 'Выполнена')
 
         response = self.client.post(url, {'edit_buttons': 'Отложено'})
         self.assertEqual(response.status_code, 302)
@@ -127,6 +141,17 @@ class TestTasks(TestCase):
         response = self.client.post(url, {'edit_buttons': 'Не задача'})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Task.objects.get(pk=task.pk).status, 'Не задача')
+
+        response = self.client.post(url, {'edit_buttons': 'Выполнено'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Task.objects.get(pk=task.pk).status, 'Выполнена')
+
+    def test_task_edit_view_buttons_perm_error(self):
+        task = baker.make(Task, performer=self.user, status='Выполнена')
+        url = reverse('task_edit', kwargs={'pk': task.pk})
+
+        response = self.client.post(url, {'edit_buttons': 'Выполнено'})
+        self.assertEqual(response.status_code, 403)
 
     def test_comment_if_changes(self):
         task = baker.make(Task, status='Новая')

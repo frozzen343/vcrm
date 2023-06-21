@@ -18,37 +18,44 @@
 
                     {% for field in form %}
                         <div class="form-group text-left">
-                            {% if field == form.fire or field == form.drive %}
-                                <div class="form-check" style="margin-top: 30px;">
-                                    <label class="form-check-label">
-                                        {{ field.label_tag }}
-                                        {{ field|attr:"class:form-check-input" }}
-                                        <span class="form-check-sign">
-                                            <span class="check"></span>
-                                        </span>
-                                    </label>
-                                </div>
-                            {% else %}
-                                {{ field.label_tag }}
-                                <div class="text-muted">
-                                    <p>{{ field.help_text }}</p>
-                                </div>
-
-                                {% if field.errors %}
-                                    <div class="alert alert-danger" style="padding:0">
-                                        <div class="container">
-                                            <div class="alert-icon">
-                                                <i class="material-icons">error_outline</i>
-                                            </div>
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true"><i class="material-icons">clear</i></span>
-                                            </button>
-                                            <b>Ошибка:</b> {{ field.errors }}
+                            {% if field.errors %}
+                                <div class="alert alert-danger" style="padding:0">
+                                    <div class="container">
+                                        <div class="alert-icon">
+                                            <i class="material-icons">error_outline</i>
                                         </div>
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true"><i class="material-icons">clear</i></span>
+                                        </button>
+                                        <b>Ошибка:</b> {{ field.errors }}
                                     </div>
+                                </div>
+                            {% endif %}
+                            <div class="text-muted">
+                                <p>{{ field.help_text }}</p>
+                            </div>
+                            {% if field == form.performer or field == form.status %}
+                                {% if 'perms.change_performer' not in perms %}
+                                    {{ field|attr:"class:form-control from-control-lg"|attr:"hidden:True" }}
+                                {% else %}
+                                    {{ field.label_tag }}
+                                    {{ field|attr:"class:form-control from-control-lg" }}
                                 {% endif %}
-                                
-                                {{ field|attr:"class:form-control from-control-lg" }}
+                            {% else %}
+                                {% if field == form.fire or field == form.drive %}
+                                    <div class="form-check" style="margin-top: 30px;">
+                                        <label class="form-check-label">
+                                            {{ field.label_tag }}
+                                            {{ field|attr:"class:form-check-input" }}
+                                            <span class="form-check-sign">
+                                                <span class="check"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                {% else %}
+                                    {{ field.label_tag }}
+                                    {{ field|attr:"class:form-control from-control-lg" }}
+                                {% endif %}
                             {% endif %}
                         </div>
                     {% endfor %}
@@ -107,21 +114,27 @@
                             <i class="material-icons">clear</i>
                         </button>
                     </div>
-                    {% if "@" in task.contacts %}
-                        <div class="modal-body">
+                    <div class="modal-body">
+                        {% if task.mail_id %}
                             <li class="list-group-item g_field">
-                            <div class="form-check">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" name="notice_done" type="checkbox" value="">
-                                        Уведомить постановщика задачи
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
-                                </label>
-                            </div>
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" name="notice_done" type="checkbox" value="">
+                                            Уведомить постановщика задачи
+                                        <span class="form-check-sign">
+                                            <span class="check"></span>
+                                        </span>
+                                    </label>
+                                </div>
                             </li>
-                        </div>
-                    {% endif %}
+                        {% endif %}
+                        {% if 'perms.edit_closed_task' not in perms %}
+                            <li class="list-group-item g_field">
+                                <p>После закрытия задачи, редактирование будет возможно </p>
+                                <p><b>только через руководство</b></p>
+                            </li>
+                        {% endif %}
+                    </div>
                     <div class="modal-footer">
                         <input type="submit" class="btn btn-md btn-outline-info mr-2" name="edit_buttons" value="Выполнено">
                         <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>

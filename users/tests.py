@@ -59,7 +59,7 @@ class TestPermissions(TestCase):
                                            kwargs={'user_id': 1,
                                                    'group_id': 1}))
         self.assertEqual(response.status_code, 403)
-        response = self.client.get(reverse('profile', kwargs={'pk': 50}))
+        response = self.client.get(reverse('profile', kwargs={'pk': 5000}))
         self.assertEqual(response.status_code, 403)
 
 

@@ -2,11 +2,13 @@ from django.urls import reverse_lazy
 from django.http.response import HttpResponseRedirect
 from django.views.generic.edit import UpdateView, CreateView
 from django_filters.views import FilterView
+from django.db.models import Q
+from django.core.exceptions import PermissionDenied
 
 from clients.models import Contact
 from tasks.models import Task, Comment
 from tasks.filters import TaskFilter
-from tasks.forms import CommentEditForm
+from tasks.forms import CommentEditForm, TaskCreateForm
 from mail.views import send_mail_notice_task
 
 
@@ -44,23 +46,34 @@ class TaskListView(FilterView):
     filterset_class = TaskFilter
     ordering = ['-date_created']
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.has_perm('perms.view_other_users_tasks'):
+            queryset = queryset.filter(Q(performer=self.request.user) |
+                                       Q(performer=None))
+        return queryset
+
 
 class TaskCreateView(CreateView):
     template_name = 'tasks/task_create.html'
     model = Task
     success_url = reverse_lazy('task_list')
-    fields = ['title',
-              'performer',
-              'status',
-              'hours_cost',
-              'contacts', 'client',
-              'fire', 'drive',
-              'description']
+    form_class = TaskCreateForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def get_initial(self):
         return {'performer': self.request.user}
 
     def form_valid(self, form):
+        if not self.request.user.has_perm('perms.change_performer') and \
+                form.cleaned_data['performer'] and \
+                form.cleaned_data['performer'] != self.request.user:
+            raise PermissionDenied
+
         comment = (f'Пользователь <b>{self.request.user.first_name} '
                    f'{self.request.user.last_name}</b> создал задачу')
         form.save()
@@ -82,6 +95,16 @@ class TaskEditView(UpdateView):
               'fire', 'drive',
               'description']
 
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if self.object.performer \
+            and self.object.performer != request.user \
+            and not self.request.user.has_perm(
+                    'perms.view_other_users_tasks'):
+            raise PermissionDenied()
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['comments'] = Comment.objects.filter(task=self.object) \
@@ -95,6 +118,12 @@ class TaskEditView(UpdateView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+
+        if 'add_comment' not in request.POST \
+                and not self.request.user.has_perm('perms.edit_closed_task') \
+                and self.object.status == 'Выполнена':
+            raise PermissionDenied()
+
         if 'add_comment' in request.POST:
             form_comment = self.second_form_class(request.POST)
             if form_comment.is_valid():
@@ -137,6 +166,10 @@ class TaskEditView(UpdateView):
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
+        if not self.request.user.has_perm('perms.change_performer') and \
+                form.cleaned_data['performer'] and \
+                form.cleaned_data['performer'] != self.request.user:
+            raise PermissionDenied
         if form.has_changed():
             comment_if_changes(self.object,
                                self.request.user,

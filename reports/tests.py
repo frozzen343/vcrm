@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 from model_bakery import baker
 from datetime import datetime
 
@@ -15,8 +16,10 @@ class ReportsTest(TestCase):
                                is_staff=True, is_active=True)
         self.client.force_login(User.objects.get(id=self.user.id))
         self.client_1 = baker.make(Client)
-        baker.make(Task, hours_cost=2, date_created=datetime(2023, 5, 1),
-                   client_id=self.client_1.id, performer_id=self.user.id)
+        baker.make(Task, hours_cost=2, status='Выполнена',
+                   date_created=timezone.make_aware(datetime(2023, 5, 1)),
+                   client_id=self.client_1.id, performer_id=self.user.id,
+                   date_closed=timezone.make_aware(datetime(2023, 5, 1)))
 
     def test_make_hours_table(self):
         table = make_hours_table(month=5, year=2023)

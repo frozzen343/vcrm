@@ -13,8 +13,8 @@ from reports.forms import HoursReportForm
 
 def make_hours_table(month=timezone.now().month, year=timezone.now().year):
     tasks = Task.objects \
-            .filter(date_created__month=month,
-                    date_created__year=year,
+            .filter(date_closed__month=month,
+                    date_closed__year=year,
                     performer__isnull=False) \
             .values('performer__last_name', 'client__name') \
             .annotate(hours=Sum('hours_cost')) \
@@ -95,7 +95,7 @@ def main_reports(request):
 def hours_reports(request):
     template_name = 'reports/hours_reports.html'
 
-    if not request.user.has_perm('reports.view_users_report'):
+    if not request.user.has_perm('perms.view_users_report'):
         raise PermissionDenied()
 
     if request.method == 'POST':

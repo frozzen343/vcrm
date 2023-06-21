@@ -66,8 +66,11 @@
                 <a href="{% url 'profile' user.pk %}" class="dropdown-item">Профиль</a>
                 <a href="{% url 'logout' %}" class="dropdown-item">Выход</a>
                 {% if 'users.view_user' in perms %}
-                <hr>
-                <a href="{% url 'user_list' %}" class="dropdown-item">Управление пользователями</a>
+                    <hr>
+                    <a href="{% url 'user_list' %}" class="dropdown-item">Управление пользователями</a>
+                {% endif %}
+                {% if 'settings.edit_settings' in perms %}
+                    <a href="{% url 'settings_list' %}" class="dropdown-item">Настройки VCRM</a>
                 {% endif %}
               </div>
             </li>

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'clients',
     'reports',
     'mail',
+    'settings',
 ]
 
 MIDDLEWARE = [
@@ -152,12 +153,6 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'main'
 LOGOUT_REDIRECT_URL = "login"
 
-
-EMAIL_HOST = getenv('SMTP_SERVER')
-EMAIL_HOST_USER = getenv('EMAIL')
-EMAIL_HOST_PASSWORD = getenv('EMAIL_PASSWORD')
-EMAIL_USE_TLS = getenv('USE_SSL_TLS') == 'True'
-DEFAULT_FROM_EMAIL = f'{getenv("EMAIL_NAME")} <{getenv("EMAIL")}>'
 
 REDIS_HOST = getenv('REDIS_HOST', default='127.0.0.1')
 REDIS_PORT = getenv('REDIS_PORT', default='6379')

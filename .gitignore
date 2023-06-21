@@ -18,6 +18,7 @@ __pycache__/
 # local settings
 static/admin/
 backup_db.json
+backup_db.json.gz
 celerybeat-schedule
 profile_images/
 mail_media/

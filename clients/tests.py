@@ -8,8 +8,8 @@ from users.models import User
 
 class TestClients(TestCase):
     def setUp(self):
-        self.user = baker.make(User, is_superuser=False,
-                               is_staff=False, is_active=True)
+        self.user = baker.make(User, is_superuser=True, is_staff=True)
+        self.client.force_login(User.objects.get(id=self.user.id))
 
     def test_client_list_view(self):
         baker.make(Client, _quantity=10)
@@ -45,11 +45,20 @@ class TestClients(TestCase):
         client_1.refresh_from_db()
         self.assertEqual(client_1.name, 'New Name')
 
+    def test_client_perm_error(self):
+        client_1 = baker.make(Client)
+        user = baker.make(User, is_superuser=False, is_staff=False)
+        self.client.force_login(User.objects.get(id=user.id))
+
+        response = self.client.post(reverse('client_edit', args=[client_1.pk]),
+                                    {'name': 'New Name'})
+        self.assertEqual(response.status_code, 403)
+
 
 class TestContacts(TestCase):
     def setUp(self):
-        self.user = baker.make(User, is_superuser=False,
-                               is_staff=False, is_active=True)
+        self.user = baker.make(User, is_superuser=True, is_staff=True)
+        self.client.force_login(User.objects.get(id=self.user.id))
         self.client_1 = baker.make(Client)
         self.client_2 = baker.make(Client)
         self.contact_1 = baker.make(Contact, client_id=self.client_1.id)
@@ -84,3 +93,14 @@ class TestContacts(TestCase):
         self.assertEqual(response.status_code, 302)
         self.contact_1.refresh_from_db()
         self.assertEqual(self.contact_1.contact, 'New Contact')
+
+    def test_contact_perm_error(self):
+        user = baker.make(User, is_superuser=False, is_staff=False)
+        self.client.force_login(User.objects.get(id=user.id))
+
+        response = self.client.post(reverse('contact_edit',
+                                            args=[self.client_1.pk,
+                                                  self.contact_1.pk]), {
+            'contact': 'New Contact',
+            'fio': 'New fio'})
+        self.assertEqual(response.status_code, 403)

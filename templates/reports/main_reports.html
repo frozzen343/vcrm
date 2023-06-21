@@ -12,7 +12,7 @@
     </div>
     <hr>
 
-    {% if 'reports.view_users_report' in perms %}
+    {% if 'perms.view_users_report' in perms %}
         <a href="{% url 'hours_reports' %}" class="custom-btn btn-16">
             <span class="material-icons">list</span>Отчёт по часам
         </a>

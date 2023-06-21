@@ -3,8 +3,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.core.mail import send_mail
-from os import getenv
 
+from settings.models import Email
 from users.models import User
 from clients.models import Client
 from mail.models import Mail
@@ -103,22 +103,24 @@ class Task(models.Model):
         self.__original_status = self.status
 
     def notify_users(self):
-        if getenv('IMAP_SERVER'):
-            users = User.objects.filter(is_active=True).all()
+        email = Email.objects.filter(sending=True).first()
+        if email:
+            users = User.objects.filter(is_active=True,
+                                        notify_new_tasks=True).all()
             for user in users:
-                if user.notify_new_tasks:
-                    subject = f'VCRM: Новая задача: {self.title}'
-                    message = ('Уведомление сформировано'
-                               'и отправлено автоматически с помощью "VCRM')
+                subject = f'VCRM: Новая задача: {self.title}'
+                message = ('Уведомление сформировано'
+                           'и отправлено автоматически с помощью "VCRM')
 
-                    message_html = (f'{self.description}<br><br>Уведомление '
-                                    'сформировано и отправлено автоматически '
-                                    'с помощью "VCRM"')
-                    send_mail(subject,
-                              message,
-                              html_message=message_html,
-                              from_email=None,
-                              recipient_list=[user.email])
+                message_html = (f'{self.description}<br><br>Уведомление '
+                                'сформировано и отправлено автоматически '
+                                'с помощью "VCRM"')
+                send_mail(subject,
+                          message,
+                          html_message=message_html,
+                          from_email=f'{email.name} <{email.email}>',
+                          recipient_list=[user.email],
+                          connection=Email.get_connection())
 
 
 class CommentManager(models.Manager):

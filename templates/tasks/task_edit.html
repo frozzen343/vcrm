@@ -32,44 +32,46 @@
 
             <div class="col-lg-12">
                 <div class="row">
-                <button class="custom-btn btn-16" data-toggle="modal" data-target="#Modal_Edit" style="margin-right:15px;">
-                    <i class="material-icons">edit</i>
-                    Изменить
-                    {% if form.errors %}
-                    <div class="alert alert-danger" style="padding:0">
-                        <div class="container">
-                            <div class="alert-icon">
-                                <i class="material-icons">error_outline</i>
+                    {% if task.status != 'Выполнена' or 'perms.edit_closed_task' in perms %}
+                        <button class="custom-btn btn-16" data-toggle="modal" data-target="#Modal_Edit" style="margin-right:15px;">
+                            <i class="material-icons">edit</i>
+                            Изменить
+                            {% if form.errors %}
+                            <div class="alert alert-danger" style="padding:0">
+                                <div class="container">
+                                    <div class="alert-icon">
+                                        <i class="material-icons">error_outline</i>
+                                    </div>
+                                    <b>Ошибка</b>
+                                </div>
                             </div>
-                            <b>Ошибка</b>
-                        </div>
-                    </div>
+                            {% endif %}
+                        </button>
+                        {% if task.status == 'Новая' or task.status == 'Отложена' or task.status == 'Не задача' %}
+                            <button class="custom-btn btn-3" data-toggle="modal" data-target="#Modal_Task_Take" style="margin-right:15px;">
+                            <i class="material-icons">done</i>
+                            Принять задачу
+                            </button>
+                        {% endif %}
+                        {% if task.status == 'В работе' %}
+                            <button class="custom-btn btn-4" data-toggle="modal" data-target="#Modal_Task_Done" style="margin-right:15px;">
+                            <i class="material-icons">done</i>
+                            Закрыть задачу
+                            </button>
+                        {% endif %}
+                        {% if task.status != 'Отложена' %}
+                        <button class="custom-btn btn-11" data-toggle="modal" data-target="#Modal_Task_Postpone" style="margin-right:15px;">
+                            <i class="material-icons">trending_up</i>
+                            Отложить
+                        </button>
+                        {% endif %}
+                        {% if task.status != 'Не задача' %}
+                    <button class="custom-btn btn-15" data-toggle="modal" data-target="#Modal_Task_Down" style="margin-right:15px;">
+                        <i class="material-icons">close</i>
+                        Не задача
+                    </button>
                     {% endif %}
-                </button>
-                {% if task.status == 'Новая' or task.status == 'Отложена' or task.status == 'Не задача' %}
-                    <button class="custom-btn btn-3" data-toggle="modal" data-target="#Modal_Task_Take" style="margin-right:15px;">
-                    <i class="material-icons">done</i>
-                    Принять задачу
-                    </button>
-                {% endif %}
-                {% if task.status == 'В работе' %}
-                    <button class="custom-btn btn-4" data-toggle="modal" data-target="#Modal_Task_Done" style="margin-right:15px;">
-                    <i class="material-icons">done</i>
-                    Закрыть задачу
-                    </button>
-                {% endif %}
-                {% if task.status != 'Отложена' %}
-                <button class="custom-btn btn-11" data-toggle="modal" data-target="#Modal_Task_Postpone" style="margin-right:15px;">
-                    <i class="material-icons">trending_up</i>
-                    Отложить
-                </button>
-                {% endif %}
-                {% if task.status != 'Не задача' %}
-                <button class="custom-btn btn-15" data-toggle="modal" data-target="#Modal_Task_Down" style="margin-right:15px;">
-                    <i class="material-icons">close</i>
-                    Не задача
-                </button>
-                {% endif %}
+                    {% endif %}
                 </div>
             </div>
 
@@ -138,13 +140,15 @@
             <div class="col-lg-4">
                 <ul class="list-group list-group-flush" style="padding: 1rem">
                     <h4 class="Title" style="margin-left: 10px;">Клиент<hr/></h4>
-                    {% if task.client %}
-                        {% if task.contacts not in contacts.all %} 
-                            <li class="list-group-item g_field">
-                                <a href="{% url 'contact_create' fk=task.client.pk contact=task.contacts %}" class="btn btn-outline-secondary btn-sm" role="button" style="margin-left: 2rem;">
-                                    Привязать контакт к клиенту
-                                </a>                         
-                            </li>
+                    {% if 'clients.change_contact' in perms %}
+                        {% if task.client %}
+                            {% if task.contacts not in contacts.all %}
+                                <li class="list-group-item g_field">
+                                    <a href="{% url 'contact_create' fk=task.client.pk contact=task.contacts %}" class="btn btn-outline-secondary btn-sm" role="button" style="margin-left: 2rem;">
+                                        Привязать контакт к клиенту
+                                    </a>
+                                </li>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                     <li class="list-group-item g_field">

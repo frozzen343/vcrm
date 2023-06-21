@@ -1,7 +1,6 @@
-from django.conf import settings
-from imap_tools import MailBox, AND
-from os import getenv
+from imap_tools import MailBox, AND, A
 
+from settings.models import Email
 from vcrm.celery import app
 from mail.models import Mail
 from mail.views import download_attachments, create_task_from_mail
@@ -14,12 +13,13 @@ def setup_periodic_get_mail(sender, **kwargs):
 
 @app.task
 def mail_get():
-    server = getenv('IMAP_SERVER')
-    if server:
-        with MailBox(server).login(settings.EMAIL_HOST_USER,
-                                   settings.EMAIL_HOST_PASSWORD) as mailbox:
-            # TODO: нужно? добавить автопрочтение писем new=True
-            for msg in mailbox.fetch(AND(flagged=True, seen=False)):
+    emails = Email.objects.all()
+    for email in emails:
+        with MailBox(email.imap).login(email.email, email.password) as mailbox:
+            get_method = AND(flagged=True, seen=False)\
+                if email.get_method == 'manual' else A(new=True)
+
+            for msg in mailbox.fetch(get_method):
                 if not Mail.objects.filter(messageid=msg.uid):
                     text_html = msg.html
                     text_html = text_html.replace("\"", '\'')  # to Iframe work

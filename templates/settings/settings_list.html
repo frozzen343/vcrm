@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+
+
+    <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background-color: #ffffff;">
+                <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page"><b>Настройки VCRM</b></li>
+            </ol>
+        </nav>
+    </div>
+    <hr>
+
+  <div class="card" style="margin-top: 0px; margin-bottom: 10px;">
+    <div class="card-body">
+            <div class="row">
+                <div class="col-lg-6" style="margin-bottom: 30px;">
+                    {% if messages %}
+                        <hr>
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        <hr>
+                    {% endif %}
+                    <h4 class="Title" style="margin-left: 10px;">Получение заявок через почту<hr/> </h4>
+                    <a href="{% url 'email_add' %}" class="custom-btn btn-16" role="button">
+                        <i class="material-icons">add</i>
+                        Добавить почту
+                    </a>
+                    <hr>
+                    {% for email in email_list %}
+                        <form method="POST" action="{% url 'email_del' pk=email.pk %}">
+                            {% csrf_token %}
+                            <p>
+                                {{ email.name }} <b>{{ email }}</b>
+                                <a href="{% url 'email_edit' pk=email.pk %}" role="button">
+                                    <i class="material-icons text-danger">edit</i>
+                                </a>
+
+                                <a href="{% url 'email_del' pk=email.pk %}" data-toggle="modal" data-target="#Modal_Email_Del">
+                                    <i class="material-icons text-danger">close</i>
+                                </a>
+                                {% if email.sending %}
+                                    <a href="{% url 'email_test' email_pk=email.pk %}" class="btn btn-success btn-sm" role="button">
+                                        Отправить тестовое письмо
+                                    </a>
+                                {% endif %}
+
+                                <hr>
+                            </p>
+                            <!-- Del Email Modal -->
+                            <div class="modal fade" id="Modal_Email_Del" tabindex="-1" role="dialog">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Подтверждение</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <i class="material-icons">clear</i>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="text">Вы уверены, что хотите удалить эту почту ?</div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-md btn-outline-danger mr-2">Удалить</button>
+                                            <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--  End Modal -->
+                        </form>
+                    {% empty %}
+                        <p>Почты ещё не добавлены</p>
+                    {% endfor %}
+                </div>
+                <div class="col-lg-6" style="margin-bottom: 30px;">
+                    <h4 class="Title" style="margin-left: 10px;">Восстановление базы данных<hr/> </h4>
+                    <form method="POST" action="{% url 'import_backup' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="file" name="backup_file" accept=".json.gz" required><br><br>
+                        <button class='btn btn-success btn-sm' type="submit">Загрузить</button>
+                    </form>
+                </div>
+            </div>
+    </div>
+  </div>
+
+{% endblock %}

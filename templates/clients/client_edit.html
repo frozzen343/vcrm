@@ -23,9 +23,11 @@
                         <a href="{% url 'contact_list' fk=client.pk %}" class="custom-btn btn-16">
                             <span class="material-icons">list</span>Связанные контакты
                         </a>
-                        <a href="{% url 'client_del' pk=client.pk %}" class="custom-btn btn-16" data-toggle="modal" data-target="#Modal_Client_Del">
-                            <span class="material-icons">delete_forever</span>Удалить клиента
-                        </a>
+                        {% if 'clients.delete_client' in perms %}
+                            <a href="{% url 'client_del' pk=client.pk %}" class="custom-btn btn-16" data-toggle="modal" data-target="#Modal_Client_Del">
+                                <span class="material-icons">delete_forever</span>Удалить клиента
+                            </a>
+                        {% endif %}
                         <!-- Del Client Modal -->
                         <div class="modal fade" id="Modal_Client_Del" tabindex="-1" role="dialog">
                             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -104,9 +106,11 @@
                             {{ form.description|attr:"class:form-control from-control-lg" }}
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <input class='btn btn-lg btn-block btn-outline-info' type="submit" value="Сохранить">
-                    </div>
+                    {% if 'clients.change_client' in perms %}
+                        <div class="col-lg-6">
+                            <input class='btn btn-lg btn-block btn-outline-info' type="submit" value="Сохранить">
+                        </div>
+                    {% endif %}
                 </div>
             </form>
         </div>

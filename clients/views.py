@@ -1,4 +1,6 @@
 from django.views.generic import ListView, UpdateView, CreateView, DeleteView
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 
 from clients.models import Client, Contact
@@ -11,7 +13,8 @@ class ClientListView(ListView):
     ordering = ['name']
 
 
-class ClientCreateView(CreateView):
+class ClientCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = 'clients.add_client'
     template_name = 'clients/client_create.html'
     model = Client
     success_url = reverse_lazy('client_list')
@@ -34,8 +37,15 @@ class ClientEditView(UpdateView):
               'is_active',
               'description']
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not self.request.user.has_perm('clients.change_client'):
+            raise PermissionDenied()
+        return super().post(request, *args, **kwargs)
 
-class ClientDeleteView(DeleteView):
+
+class ClientDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'clients.delete_client'
     model = Client
     success_url = reverse_lazy("client_list")
 
@@ -56,7 +66,8 @@ class ContactListView(ListView):
                     .order_by('contact')
 
 
-class ContactCreateView(CreateView):
+class ContactCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = 'clients.add_contact'
     template_name = 'clients/contact_create.html'
     model = Contact
     fields = ['contact', 'fio', 'description']
@@ -89,6 +100,12 @@ class ContactEditView(UpdateView):
     model = Contact
     fields = ['contact', 'fio', 'description']
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not self.request.user.has_perm('clients.change_contact'):
+            raise PermissionDenied()
+        return super().post(request, *args, **kwargs)
+
     def get_success_url(self):
         return reverse_lazy("contact_list", kwargs={'fk': self.kwargs['fk']})
 
@@ -98,7 +115,8 @@ class ContactEditView(UpdateView):
         return context
 
 
-class ContactDeleteView(DeleteView):
+class ContactDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'clients.delete_contact'
     model = Contact
 
     def get_success_url(self):
