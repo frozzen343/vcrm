@@ -66,7 +66,7 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
         return reverse_lazy("profile", kwargs={'pk': self.request.user.pk})
 
 
-class UserChengePass(LoginRequiredMixin, PasswordChangeView):
+class UserChangePass(LoginRequiredMixin, PasswordChangeView):
     template_name = "users/user_change_pass.html"
     form_class = SetPasswordForm
     success_url = reverse_lazy("main")
@@ -75,7 +75,13 @@ class UserChengePass(LoginRequiredMixin, PasswordChangeView):
         if (kwargs['pk'] != request.user.id and
                 not request.user.has_perm('users.change_user')):
             raise PermissionDenied()
+        self.user = get_object_or_404(User, pk=kwargs['pk'])
         return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.user
+        return kwargs
 
 
 class UserCreateView(PermissionRequiredMixin, CreateView):

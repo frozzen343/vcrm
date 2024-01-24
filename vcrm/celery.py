@@ -18,9 +18,9 @@ app.autodiscover_tasks()
 
 @app.on_after_finalize.connect
 def setup_periodic_backup(sender, **kwargs):
-    # Executes every saturday morning at 4:30 a.m.
+    # +3 hour
     sender.add_periodic_task(
-        crontab(hour=20, minute=8, day_of_week='sunday'),
+        crontab(hour=3, minute=0, day_of_week='sunday'),
         make_backup.s(),
     )
 
