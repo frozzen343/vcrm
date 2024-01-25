@@ -16,7 +16,7 @@ First credentials admin@admin.ru, admin
 
 ### Docker / docker-compose:
 ```sh
-docker-compose up
+sudo docker-compose up
 ```
 
 ### Or manual installation

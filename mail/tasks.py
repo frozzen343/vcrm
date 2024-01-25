@@ -6,6 +6,15 @@ from mail.models import Mail
 from mail.views import download_attachments, create_task_from_mail
 
 
+def convert_to_string(value):
+    if isinstance(value, (list, tuple)):
+        return ' '.join(map(str, value))
+    elif isinstance(value, str):
+        return value
+    else:
+        return str(value)
+
+
 @app.on_after_finalize.connect
 def setup_periodic_get_mail(sender, **kwargs):
     sender.add_periodic_task(60.0, mail_get.s())
@@ -23,13 +32,15 @@ def mail_get():
                 if not Mail.objects.filter(messageid=msg.uid):
                     text_html = msg.html
                     text_html = text_html.replace("\"", '\'')  # to Iframe work
+                    msg_to = convert_to_string(msg.to)
+                    msg_cc = convert_to_string(msg.cc)
 
                     mail = Mail.objects.create(
                         messageid=msg.uid,
                         from_name=msg.from_values.name,
                         from_email=msg.from_values.email,
-                        to=str(*msg.to),
-                        cc=str(*msg.cc),
+                        to=msg_to,
+                        cc=msg_cc,
                         date=msg.date,
                         subject=msg.subject if msg.subject else '(Без темы)',
                         text_html=text_html if text_html else msg.text,

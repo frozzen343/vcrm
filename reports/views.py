@@ -15,7 +15,8 @@ def make_hours_table(month=timezone.now().month, year=timezone.now().year):
     tasks = Task.objects \
             .filter(date_closed__month=month,
                     date_closed__year=year,
-                    performer__isnull=False) \
+                    performer__isnull=False,
+                    status='Выполнена') \
             .values('performer__last_name', 'client__name') \
             .annotate(hours=Sum('hours_cost')) \
             .order_by('client')
