@@ -6,13 +6,22 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 from email.mime.base import MIMEBase
 from email import encoders
+from imap_tools import MailBox, AND, A
 import io
 
-
-from mail.models import Attachment
+from mail.models import Attachment, Mail
 from settings.models import Email
 from tasks.models import Task, Comment
 from clients.models import Contact, Client
+
+
+def convert_to_string(value):
+    if isinstance(value, (list, tuple)):
+        return ' '.join(map(str, value))
+    elif isinstance(value, str):
+        return value
+    else:
+        return str(value)
 
 
 def send_mail_notice_task(task, template):
@@ -74,3 +83,54 @@ def create_task_from_mail(subject, text, from_email, mail):
     task.save()
     Comment.objects.create(
         task=task, comment='<p>Задача создана автоматически<p>')
+
+
+def load_new_mail():
+    """
+    Download mail from added emails
+    """
+    emails = Email.objects.all()
+    if len(emails) == 0:
+        return 'Почта ещё не настроена'
+    mail_count = 0
+    for email in emails:
+        with MailBox(email.imap).login(email.email, email.password) as mailbox:
+            get_method = AND(flagged=True, seen=False)\
+                if email.get_method == 'manual' else A(new=True)
+
+            for msg in mailbox.fetch(get_method):
+                if not Mail.objects.filter(messageid=msg.uid):
+                    text_html = msg.html
+                    text_html = text_html.replace("\"", '\'')  # to Iframe work
+                    msg_to = convert_to_string(msg.to)
+                    msg_cc = convert_to_string(msg.cc)
+
+                    mail = Mail.objects.create(
+                        messageid=msg.uid,
+                        from_name=msg.from_values.name,
+                        from_email=msg.from_values.email,
+                        to=msg_to,
+                        cc=msg_cc,
+                        date=msg.date,
+                        subject=msg.subject if msg.subject else '(Без темы)',
+                        text_html=text_html if text_html else msg.text,
+                        server_messageid=msg.headers['message-id'][0]
+                    )
+                    for att in msg.attachments:
+                        attachment = download_attachments(
+                            att.payload, att.filename or 'no_name', mail=mail,
+                            inline=bool(att.content_id)
+                        )
+                        if att.content_id:
+                            text_html = text_html.replace(
+                                f"cid:{att.content_id}",
+                                f'{attachment.file.url}')
+                            mail.text_html = text_html
+                            mail.save()
+
+                    create_task_from_mail(mail.subject,
+                                          text_html,
+                                          msg.from_values.email,
+                                          mail)
+                    mail_count += 1
+    return f'Загружено новых писем: {mail_count}'

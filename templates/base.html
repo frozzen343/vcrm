@@ -32,7 +32,6 @@
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse">
-          <div id="showtime" class="ml-auto h4" style="margin-right: 3px;"></div>  <!-- часы -->
           <ul class="navbar-nav ml-auto">
             
             <li class="nav-item">
@@ -40,22 +39,22 @@
                 Главная
               </a>
             </li>
-            <li class="dropdown nav-item">
-              <a href="javascript:;" class="dropdown-toggle nav-link" data-toggle="dropdown">Задачи</a>
-              <div class="dropdown-menu">
-                <a href="{% url 'task_create' %}" class="dropdown-item">Добавить задачу</a>
-                <a href="{% url 'task_list' %}?status=Новая" class="dropdown-item">Новые</a>
-                <a href="{% url 'task_list' %}?status=В работе&performer={{ user.id }}" class="dropdown-item">Мои</a>
-                <a href="{% url 'task_list' %}" class="dropdown-item">Все</a>
-              </div>
+            <li class="nav-item">
+              <a href="{% url 'task_list' %}" class="nav-link">
+                Задачи
+              </a>
             </li>
-            <li class="dropdown nav-item">
-              <a href="javascript:;" class="dropdown-toggle nav-link" data-toggle="dropdown">Меню</a>
-              <div class="dropdown-menu">
-                <a href="{% url 'client_list' %}" class="dropdown-item">Клиенты</a>
-                <a href="{% url 'main_reports' %}" class="dropdown-item">Отчеты</a>
-              </div>
+            <li class="nav-item">
+              <a href="{% url 'client_list' %}" class="nav-link">
+                Клиенты
+              </a>
             </li>
+            <li class="nav-item">
+              <a href="{% url 'main_reports' %}" class="nav-link">
+                Отчеты
+              </a>
+            </li>
+            <div id="showtime" class="ml-auto h4 pl-4 pr-3" style="margin-right: 3px;"></div>  <!-- часы -->
             <li class="dropdown nav-item">
               <a href="javascript:;" style="padding: 1px;" class="dropdown-toggle nav-link" data-toggle="dropdown">
 
@@ -95,5 +94,6 @@
   {% endif %}
 
   {% include "scripts.html" %}
+  {% block scripts %}{% endblock %}
 
 </html>

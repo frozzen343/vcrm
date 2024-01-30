@@ -1,0 +1,179 @@
+<script>
+    $(document).ready(function(){
+        CurrentUserID = 0;
+        var navLinks = document.querySelectorAll('.task-status-bar');
+        navLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                var status = this.textContent.trim();
+                task_list(status);
+            });
+        });
+
+        GetUserList();
+        var activeElement = document.querySelector('.nav-link.active');
+        var status = activeElement.textContent.trim();
+        task_list(status);
+    });
+
+    function forced_mail_get() {
+        const get_mail_button = $("#forced_mail_get");
+        get_mail_button.empty();
+        var spinner = $('<i class="fa fa-spinner fa-spin"></i>')
+        get_mail_button.append(spinner)
+        
+        $.ajax({
+            type: "POST",
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            url: "{% url 'api_mail_get' %}",
+            data: $(this).serialize(),
+            success: function(response){
+                var nav_text = document.getElementById('navbar_new_task');
+                if (nav_text.classList.contains('active')) {
+                    task_list('Новая');
+                }
+                showNotification('success', response.message);
+                get_mail_button.empty();
+                spinner = $('<i class="material-icons">refresh</i>')
+                get_mail_button.append(spinner)
+            },
+            error: function(response){
+                showNotification('danger', response.responseJSON.detail);
+                get_mail_button.empty();
+                spinner = $('<i class="material-icons">refresh</i>')
+                get_mail_button.append(spinner)
+            }
+        });
+    }
+
+    function GetUserList() {
+        $.ajax({
+            url: "{% url 'api_user_list' %}",
+            data: $(this).serialize(),
+            success: function(response){
+                const UserListOptions = $("#user-list-options");
+                UserListOptions.empty();
+                UserListOptions.append('<select id="userSelect" onchange="task_list(document.querySelector(\'.nav-link.active\').textContent.trim())"  class="selectpicker" data-size="7" data-style="p-1 btn btn-outline btn-round text-end" title="Single Select" tabindex="-98">')
+                var select = $('#userSelect');
+                response.results.forEach(function(user) {
+                    var fullName = user.last_name + ' ' + user.first_name;
+                    if (!user.current_user) {
+                        select.append('<option value="' + user.id + '">' + fullName + '</option>');
+                    } else {
+                        CurrentUserID = user.id;
+                        select.append('<option value="' + user.id + '" selected="">' + fullName + '</option>');
+                    }
+
+                });
+                UserListOptions.append('</select>');
+                select.selectpicker('refresh');
+            }
+        });
+    }
+
+    function task_list(status, url_link=null)    {
+        var link_status = "status=" + status;
+        if (!url_link) {
+            url_link = "{% url 'api_task_list' %}?"+link_status;
+            if (CurrentUserID !== 0 && status !== 'Новая') {
+                var select = document.getElementById("userSelect");
+                var selectedValue = select.options[select.selectedIndex].value;
+                var link_performer = "&performer=" + selectedValue;
+                url_link += link_performer;
+            }
+        }
+        $.ajax({
+            url: url_link,
+            data: $(this).serialize(),
+            success: function(response){
+                const tasksContainer = $("#tasks-row-container");
+                tasksContainer.empty();
+
+                response.results.forEach(function (task) {
+                    const TaskTable = generateTaskRow(task);
+                    tasksContainer.append(TaskTable);
+                });
+
+                <!-- pagination -->
+                var item_count = 10;
+                var paginationElement = $('#tasks_pagination');
+                    paginationElement.empty();
+                if (response.count && (response.count > item_count)) {
+                    let url = ''; let current_page = 0;
+                    if (response.next) {
+                        url = new URL(response.next);
+                        current_page = parseInt(url.searchParams.get("page"), 10) - 1;
+                    } else {
+                        url = new URL(response.previous);
+                        current_page = parseInt(url.searchParams.get("page"), 10) + 1;
+                        if (!current_page) { current_page = 2;}
+                    }
+
+                    if (response.previous) {
+                        var prev = $('<li class="page-item"><a class="page-link" herf="#">Назад</a></li>');
+                        prev.click(function () {
+                            task_list(status, url_link = response.previous);
+                        });
+                        paginationElement.append(prev)
+                    }
+
+                    var page = $('<li class="page-item active"><a class="page-link" herf="#">' + current_page + '</a></li>');
+                    paginationElement.append(page)
+
+                    if (response.next) {
+                        var next = $('<li class="page-item"><a class="page-link" herf="#">Далее</a></li>');
+                        next.click(function () {
+                            task_list(status, url_link = response.next);
+                        });
+                        paginationElement.append(next)
+                    }
+                }
+
+
+
+            }
+        });
+    }
+
+    function generateTaskRow(task) {
+        var url = "{% url 'task_edit' pk='000666000' %}".replace('000666000', task.id);
+        return `
+                        <tr style="cursor: pointer;" onclick="window.location.href='${url}'">
+                          <td aria-label="Постановщик" class="col-lg-3">
+                            <div class="d-flex justify-content-arounds p-0">
+                                <img src="http://cdn.onlinewebfonts.com/svg/img_110805.png" style="height: 40px; width: 40px; margin-right: 3px;" class="avatar avatar-sm me-3">
+                                <div class="d-flex flex-column justify-content-center">
+                                    <h6 class="mb-0 text-xs">${task.mail !== null ? task.mail.from_name : (task.contacts !== null ? task.contacts : '-')}</h6>
+                                    <p class="text-xs text-secondary mb-0">${task.client !== null ? task.client.name : '-'}</p>
+                                </div>
+                            </div>
+                          </td>
+                          <td aria-label="Заголовок" class="col-lg-4 align-middle text-sm">
+                              <!--<p class="text-xs font-weight-bold mb-0">Manager</p>-->
+                              <p class="text-xs text-secondary mb-0">${task.title}</p>
+                              <!--<i class="material-icons" style="font-size: 15px;">comment</i>-->
+                              <!--3-->
+                          </td>
+                          <td aria-label="Статус" class="col-lg-1 align-middle text-center text-sm">
+                            ${GetStatusBadge(task.status)}
+                            ${task.fire !== false ? '<span class="material-icons" style="margin-left:0cm">local_fire_department</span>' : ''}
+                            ${task.drive !== false ? '<span class="material-icons" style="margin-left:0cm">directions_car</span>' : ''}
+                          </td>
+                          <td aria-label="Ответственный" class="col-lg-1 align-middle text-center text-sm">
+                            <div class="d-flex justify-content-center" style="font-size: 13px;">
+                              ${task.performer !== null ?
+                                '<img src="'+task.performer.avatar+'" style="height: 40px; width: 40px; margin-right: 3px;" alt="Avatar">'
+                                    +'<div class="d-flex flex-column justify-content-center"><p class="mb-0">'+task.performer.first_name+'</p><p class="mb-0">'
+                                    +task.performer.last_name+'</p></div>'
+                                : '-'}
+                            </div>
+                          </td>
+                          <td aria-label="Поставлена / Закрыта" class="col-lg-3 align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">
+                              ${task.date_created !== null ? task.date_created+(task.date_closed !== null ? '<br><div class="text-success">'+task.date_closed : '</div><br>-') : '-'}
+                            </span>
+                          </td>
+                        </tr>
+        `;
+    }
+
+</script>

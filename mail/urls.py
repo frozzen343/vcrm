@@ -1,8 +1,9 @@
-# from django.urls import path
+from django.urls import path
 
-# from mail.views import
+import mail.views_api as views_api
 
 
 urlpatterns = [
-    # path('get', mail_get, name='mail_get'),
+    path('api/v1/mail_get', views_api.YourApiView.as_view(),
+         name='api_mail_get'),
 ]

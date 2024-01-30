@@ -47,12 +47,12 @@
                             <form method="POST" action="{% url 'user_del' pk=user.pk %}">
                                 {% csrf_token %}
                                 <a href="{% url 'user_edit' pk=user.pk %}"
-                                class="btn btn-outline-secondary btn-sm" role="button">
-                                    <span data-feather="edit"></span>
+                                class="btn btn-primary btn-fab btn-fab-mini btn-round mr-3" role="button">
+                                    <i class="material-icons">edit</i>
                                 </a>
                                 <a href="{% url 'user_del' pk=user.pk %}" data-target="#deleteNotificationModal_{{ user.id }}"
-                                class="btn btn-outline-secondary btn-sm" data-toggle="modal" role="button">
-                                    <span data-feather="trash"></span>
+                                class="btn btn-primary btn-fab btn-fab-mini btn-round" data-toggle="modal" role="button">
+                                    <i class="material-icons" style="color: red;">delete</i>
                                 </a>
                                 <!-- Delete Warning Modal -->
                                 <div class="modal fade" id="deleteNotificationModal_{{ user.id }}"

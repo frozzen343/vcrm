@@ -41,21 +41,22 @@
                                     {{ field.label_tag }}
                                     {{ field|attr:"class:form-control from-control-lg" }}
                                 {% endif %}
+                            {% elif field == form.fire or field == form.drive %}
+                                <div class="form-check" style="margin-top: 30px;">
+                                    <label class="form-check-label">
+                                        {{ field.label_tag }}
+                                        {{ field|attr:"class:form-check-input" }}
+                                        <span class="form-check-sign">
+                                            <span class="check"></span>
+                                        </span>
+                                    </label>
+                                </div>  
+                            {% elif field == form.hours_cost %}
+                                {{ field.label_tag }}
+                                {{ field|attr:"class:form-control from-control-lg"|attr:"step:0.5" }}
                             {% else %}
-                                {% if field == form.fire or field == form.drive %}
-                                    <div class="form-check" style="margin-top: 30px;">
-                                        <label class="form-check-label">
-                                            {{ field.label_tag }}
-                                            {{ field|attr:"class:form-check-input" }}
-                                            <span class="form-check-sign">
-                                                <span class="check"></span>
-                                            </span>
-                                        </label>
-                                    </div>
-                                {% else %}
-                                    {{ field.label_tag }}
-                                    {{ field|attr:"class:form-control from-control-lg" }}
-                                {% endif %}
+                                {{ field.label_tag }}
+                                {{ field|attr:"class:form-control from-control-lg" }}
                             {% endif %}
                         </div>
                     {% endfor %}

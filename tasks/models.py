@@ -98,7 +98,7 @@ class Task(models.Model):
             self.notify_users()
         if self.status != self.__original_status:
             if self.status == 'Выполнена':
-                self.date_closed = timezone.localtime()
+                self.date_closed = timezone.now()
         super().save(*args, **kwargs)
         self.__original_status = self.status
 

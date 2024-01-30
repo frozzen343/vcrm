@@ -1,15 +1,13 @@
 from django.urls import reverse_lazy
 from django.http.response import HttpResponseRedirect
 from django.views.generic.edit import UpdateView, CreateView
-from django_filters.views import FilterView
-from django.db.models import Q
+from django.views.generic import TemplateView
 from django.core.exceptions import PermissionDenied
 
 from clients.models import Contact
 from tasks.models import Task, Comment
-from tasks.filters import TaskFilter
 from tasks.forms import CommentEditForm, TaskCreateForm
-from mail.views import send_mail_notice_task
+from mail.utils import send_mail_notice_task
 
 
 def comment_if_changes(task: object, user: object, fields: list):
@@ -38,20 +36,8 @@ def comment_if_changes(task: object, user: object, fields: list):
         Comment.objects.create(task=task, comment=comment)
 
 
-class TaskListView(FilterView):
+class TaskListView(TemplateView):
     template_name = 'tasks/task_list.html'
-    model = Task
-    context_object_name = 'tasks'
-    paginate_by = 10
-    filterset_class = TaskFilter
-    ordering = ['-date_created']
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        if not self.request.user.has_perm('perms.view_other_users_tasks'):
-            queryset = queryset.filter(Q(performer=self.request.user) |
-                                       Q(performer=None))
-        return queryset
 
 
 class TaskCreateView(CreateView):
