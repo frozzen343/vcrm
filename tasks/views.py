@@ -2,7 +2,7 @@ from django.urls import reverse_lazy
 from django.http.response import HttpResponseRedirect
 from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic import TemplateView
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 
 from clients.models import Contact
 from tasks.models import Task, Comment
@@ -131,6 +131,8 @@ class TaskEditView(UpdateView):
                     send_mail_notice_task(task, 'mail/take_task.html')
 
             if button == 'Выполнено':
+                if not self.object.client:
+                    return super().post(request, *args, **kwargs)
                 task.status = 'Выполнена'
                 comment_if_changes(
                     task=task, user=request.user, fields=['status'])

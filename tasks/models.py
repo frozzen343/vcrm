@@ -74,6 +74,9 @@ class Task(models.Model):
         self.__original_status = self.status
 
     def clean(self):
+        if not self.client:
+            raise ValidationError({"client": "Клиент не установлен"})
+
         if self.status == 'Новая' and self.performer:
             self.status = 'В работе'
             raise ValidationError(

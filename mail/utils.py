@@ -30,7 +30,7 @@ def send_mail_notice_task(task, template):
         message = EmailMultiAlternatives(
             subject=task.title,
             from_email=f'{email.name} <{email.email}>',
-            to=[task.contacts, task.performer.email],
+            to=[task.contacts, task.performer.email, email.email],
             headers={'References': task.mail.server_messageid,
                      'In-Reply-To': task.mail.server_messageid},
             connection=Email.get_connection()
