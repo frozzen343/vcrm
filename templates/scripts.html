@@ -134,13 +134,9 @@
 <script>
   function showtime()
   {
-      $.ajax({
-          url: "{% url 'get_time' %}",
-          data: $(this).serialize(),
-          success: function(response){
-              $("#showtime").html(response.time);
-          }
-      });
+      $.get("{% url 'api_get_time' %}", function(response) {
+        $("#showtime").html(response.time);
+        });
   }
 
   $(document).ready(function(){

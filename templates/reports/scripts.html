@@ -1,0 +1,123 @@
+<script>
+$(document).ready(function() {
+    GetDate();
+
+    document.getElementById("downloadExcelBtn").addEventListener("click", function() {const monthSelect = document.getElementById("monthSelect");
+        const yearSelect = document.getElementById("yearSelect");
+        const month = monthSelect.value;
+        const year = yearSelect.value;
+        const url = `{% url 'api_to_excel' %}?month=${month}&year=${year}`;
+        $.ajax({
+            url: url,
+            type: "GET",
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function(response) {
+                const url = window.URL.createObjectURL(new Blob([response]));
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `hours_report_${month}_${year}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            },
+            error: function(xhr, status, error) {
+                showNotification('danger', 'Данных ещё нет');
+            }
+        });
+    });
+});
+
+function GetDate() {
+        $.ajax({
+            url: "{% url 'api_get_time' %}",
+            data: $(this).serialize(),
+            success: function(date){
+                var monthSelect = $('#monthSelect');
+                const months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+                for (let i = 1; i < months.length+1; i++) {
+                    if (i == date.month) {
+                        monthSelect.append('<option value="' + i + '" selected="">' + months[i-1] + '</option>');
+                    } else {
+                        monthSelect.append('<option value="' + i + '">' + months[i-1] + '</option>');
+                    }
+                }
+                const currentYear = date.year;
+                const yearSelect = $('#yearSelect');
+                for (let i = currentYear - 4; i <= currentYear + 1; i++) {
+                    if (i == date.year) {
+                        yearSelect.append('<option value="' + i + '" selected="">' + i + '</option>');
+                    } else {
+                        yearSelect.append('<option value="' + i + '">' + i + '</option>');
+                    }
+                }
+                monthSelect.selectpicker('refresh');
+                yearSelect.selectpicker('refresh');
+
+                get_hours_data(date.month, date.year);
+            }
+        });
+    }
+
+function get_select_and_make_table() {
+    const monthSelect = document.getElementById("monthSelect");
+    const yearSelect = document.getElementById("yearSelect");
+    const selectedMonth = monthSelect.value;
+    const selectedYear = yearSelect.value;
+    get_hours_data(selectedMonth, selectedYear);
+}
+
+function get_hours_data(month, year) {
+    $.get("{% url 'api_hours_report' %}?month="+month+"&year="+year, function(data) {
+        buildTable(data.data);
+    }).fail(function() {
+        $('#HoursTable').html('<tr><td colspan="3">Данных ещё нет</td></tr>');
+    });
+}
+
+function buildTable(data) {
+        const clients = Object.keys(data).sort();
+        const users = [...new Set(Object.values(data).flatMap(obj => Object.keys(obj)))].sort();
+        const table = document.getElementById("HoursTable");
+        table.innerHTML = "";
+
+        const headerRow = table.insertRow();
+        headerRow.insertCell(); // Пустая ячейка в верхнем левом углу
+        for (const user of users) {
+            const cell = headerRow.insertCell();
+            cell.textContent = user;
+        }
+        headerRow.insertCell().textContent = "Итого";
+
+        let totalByTopic = {};
+        for (const client of clients) {
+            const row = table.insertRow();
+            const topicCell = row.insertCell();
+            topicCell.textContent = client;
+            let totalHoursByTopic = 0;
+            for (const user of users) {
+                const cell = row.insertCell();
+                const hours = data[client][user] || 0;
+                cell.textContent = hours;
+                totalHoursByTopic += hours;
+                totalByTopic[user] = (totalByTopic[user] || 0) + hours;
+            }
+            const totalCell = row.insertCell();
+            totalCell.textContent = totalHoursByTopic;
+        }
+
+        const totalRow = table.insertRow();
+        const totalTopicCell = totalRow.insertCell();
+        totalTopicCell.textContent = "Итого";
+        let grandTotalHours = 0;
+        for (const user of users) {
+            const totalCell = totalRow.insertCell();
+            const totalHours = totalByTopic[user] || 0;
+            totalCell.textContent = totalHours;
+            grandTotalHours += totalHours;
+        }
+        const grandTotalCell = totalRow.insertCell();
+        grandTotalCell.textContent = grandTotalHours;
+    }
+</script>

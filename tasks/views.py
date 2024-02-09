@@ -2,7 +2,7 @@ from django.urls import reverse_lazy
 from django.http.response import HttpResponseRedirect
 from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic import TemplateView
-from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.exceptions import PermissionDenied
 
 from clients.models import Contact
 from tasks.models import Task, Comment

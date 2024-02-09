@@ -1,9 +1,15 @@
 from django.urls import path
 
-from reports.views import main_reports, hours_reports
+import reports.views as views
+import reports.views_api as views_api
 
 
 urlpatterns = [
-    path('main', main_reports, name='main_reports'),
-    path('hours', hours_reports, name='hours_reports'),
+    path('main', views.main_reports, name='main_reports'),
+    path('hours', views.HoursReportView.as_view(), name='hours_reports'),
+
+    path('api/v1/hours_report', views_api.HoursReportAPIView.as_view(),
+         name='api_hours_report'),
+    path('api/v1/to_excel', views_api.DownloadExcelAPIView.as_view(),
+         name='api_to_excel'),
 ]

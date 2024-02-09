@@ -1,6 +1,6 @@
 from django.urls import path
 
-from settings.views import SettingsView, EmailCreateUpdateView,\
+from settings.views import SettingsView, EmailCreateUpdateView, \
     EmailDeleteView, email_test_message, import_backup_view
 
 urlpatterns = [

@@ -13,88 +13,47 @@
     </div>
     <hr>
 
+
     <div class="card">
         <div class="card-body">
-            <form method="POST">
-                {% csrf_token %}
-                <div class="row">
-                    {% for field in form %}
-                        <div class="col-lg-1 form-group">
-                            {{ field.label_tag }}
-
-                            <div class="text-muted">
-                                <p>{{ field.help_text }}</p>
-                            </div>
-                            {% if field.errors %}
-                                <div class="alert alert-danger" style="padding:0">
-                                    <div class="container">
-                                        <div class="alert-icon">
-                                            <i class="material-icons">error_outline</i>
-                                        </div>
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true"><i class="material-icons">clear</i></span>
-                                        </button>
-                                        <b>Ошибка:</b> {{ field.errors }}
-                                    </div>
-                                </div>
-                            {% endif %}
-                            
-                            {{ field|attr:"class:form-control from-control-lg" }}
-                        </div>
-                    {% endfor %}
-                    <div class="col-lg-2 form-group">
-                        <input class='btn btn-lg btn-block btn-outline-info' type="submit" value="Изменить">
-                    </div>
-                    <div class="col-lg-2 form-group">
-                        <input class='btn btn-lg btn-block btn-outline-info' type="submit" name="to_excel" value="В excel">
-                    </div>
-                </div>
-            </form>
-            {{ table|safe }}
+            <select id="monthSelect" onchange="get_select_and_make_table()" class="selectpicker" data-size="7" data-style="p-1 btn btn-outline btn-round text-end" title="Месяц" tabindex="-98"></select>
+            <select id="yearSelect" onchange="get_select_and_make_table()" class="selectpicker" data-size="7" data-style="p-1 btn btn-outline btn-round text-end" title="Год" tabindex="-98"></select>
+            <button id="downloadExcelBtn" class="btn btn-primary ml-5">Скачать в Excel</button>
+            <hr>
+            <table id="HoursTable"></table>
         </div>
     </div>
 
+    
     <style>
-        * {
-        box-sizing: border-box;
+        table {
+            overflow: hidden;
         }
-
-        .dataframe {
-        overflow: hidden;
-        /*display: inline-block;*/ 
+        tr:hover {
+            background-color: rgba(255, 255, 170, 0.27);
         }
-
         td, th {
-        border: 1px solid #999;
-        padding: 5px;
-        position: relative;
+            border: 1px solid #999;
+            padding: 5px;
+            position: relative;
         }
-
-        th {
-        background-color: #fff;
+        td:hover::after,th:hover::after {
+            background-color: rgba(255, 255, 0, 0.5);
+            content: '\00a0';
+            height: 10000px;
+            left: 0;
+            position: absolute;
+            top: -5000px;
+            width: 100%;
+            z-index: -1;
         }
-
-        td:hover::before {
-        background-color: #ffa;
-        content: "";
-        height: 100%;
-        left: -5000px;
-        position: absolute;
-        top: 0;
-        width: 10000px;
-        z-index: -2;
-        }
-
-        td:hover::after {
-        background-color: #ffa;
-        content: "";
-        height: 10000px;
-        left: 0;
-        position: absolute;
-        top: -5000px;
-        width: 100%;
-        z-index: -1;
+        tr:first-child, td:first-child {
+            font-weight: bold;
         }
     </style>
 
+{% endblock %}
+
+{% block scripts %}
+    {% include "reports/scripts.html" %}
 {% endblock %}

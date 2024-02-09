@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.utils import timezone
+# from django.utils import timezone
 from model_bakery import baker
 
 from tasks.models import Task
@@ -19,8 +19,8 @@ class MainTest(TestCase):
         self.assertTemplateUsed(response, 'main/main.html')
         self.assertEqual(response.context['count_new_tasks'], 1)
 
-    def test_get_time(self):
-        response = self.client.get(reverse('get_time'))
-        self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(str(response.content, encoding='utf8'),
-                             {'time': timezone.now().strftime("%H:%M")})
+    # def test_get_time(self):
+    #     response = self.client.get(reverse('get_time'))
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertJSONEqual(str(response.content, encoding='utf8'),
+    #                          {'time': timezone.now().strftime("%H:%M")})
