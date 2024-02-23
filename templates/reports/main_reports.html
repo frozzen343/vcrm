@@ -2,9 +2,14 @@
 
 {% block content %}
 
-    <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px">
+    <div class="card mt-0 mb-0" style="position: sticky; z-index: 50; top: 55px;">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb" style="background-color: #ffffff;">
+            <ol class="breadcrumb align-items-center mb-0" style="background-color: #ffffff;">
+                <div id="backButton" class="totooltip pr-2" data-tooltip="Назад">
+                    <a class="btn btn-primary btn-fab btn-fab-mini btn-round" role="button">
+                        <i class="material-icons" style="color: white;">arrow_back</i>
+                    </a>
+                </div>
                 <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
                 <li class="breadcrumb-item text-dark active" aria-current="page"><b>Отчёты</b></li>
             </ol>

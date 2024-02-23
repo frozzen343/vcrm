@@ -70,15 +70,15 @@ function get_select_and_make_table() {
 
 function get_hours_data(month, year) {
     $.get("{% url 'api_hours_report' %}?month="+month+"&year="+year, function(data) {
-        buildTable(data.data);
+        buildTable(data.data, data.users, data.clients, month, year);
     }).fail(function() {
         $('#HoursTable').html('<tr><td colspan="3">Данных ещё нет</td></tr>');
     });
 }
 
-function buildTable(data) {
-        const clients = Object.keys(data).sort();
-        const users = [...new Set(Object.values(data).flatMap(obj => Object.keys(obj)))].sort();
+function buildTable(data, users, clients, month, year) {
+        var date = "&full_month="+year+"-"+month.toString().padStart(2, '0')+"-01";
+        
         const table = document.getElementById("HoursTable");
         table.innerHTML = "";
 
@@ -86,7 +86,7 @@ function buildTable(data) {
         headerRow.insertCell(); // Пустая ячейка в верхнем левом углу
         for (const user of users) {
             const cell = headerRow.insertCell();
-            cell.textContent = user;
+            cell.textContent = user.first_name + ' ' + user.last_name;
         }
         headerRow.insertCell().textContent = "Итого";
 
@@ -94,17 +94,23 @@ function buildTable(data) {
         for (const client of clients) {
             const row = table.insertRow();
             const topicCell = row.insertCell();
-            topicCell.textContent = client;
+            topicCell.textContent = client.name;
             let totalHoursByTopic = 0;
             for (const user of users) {
                 const cell = row.insertCell();
-                const hours = data[client][user] || 0;
-                cell.textContent = hours;
+                const hours = (data[client.id] && data[client.id][user.id]) || 0;
                 totalHoursByTopic += hours;
-                totalByTopic[user] = (totalByTopic[user] || 0) + hours;
+                totalByTopic[user.id] = (totalByTopic[user.id] || 0) + hours;
+                const link = document.createElement("a");
+                link.href = "{% url 'report_task_list' %}?status=Выполнена&performer="+user.id+"&client_id="+client.id+date;
+                link.textContent = hours;
+                cell.appendChild(link);
             }
             const totalCell = row.insertCell();
-            totalCell.textContent = totalHoursByTopic;
+            const link = document.createElement("a");
+            link.href = "{% url 'report_task_list' %}?status=Выполнена&client_id="+client.id+"&performer=all"+date;
+            link.textContent = totalHoursByTopic;
+            totalCell.appendChild(link);
         }
 
         const totalRow = table.insertRow();
@@ -113,11 +119,17 @@ function buildTable(data) {
         let grandTotalHours = 0;
         for (const user of users) {
             const totalCell = totalRow.insertCell();
-            const totalHours = totalByTopic[user] || 0;
-            totalCell.textContent = totalHours;
+            const totalHours = totalByTopic[user.id] || 0;
+            const link = document.createElement("a");
+            link.href = "{% url 'report_task_list' %}?status=Выполнена&performer="+user.id+date;
+            link.textContent = totalHours;
+            totalCell.appendChild(link);
             grandTotalHours += totalHours;
         }
         const grandTotalCell = totalRow.insertCell();
-        grandTotalCell.textContent = grandTotalHours;
+        const link = document.createElement("a");
+        link.href = "{% url 'report_task_list' %}?status=Выполнена&performer=all"+date;
+        link.textContent = grandTotalHours;
+        grandTotalCell.appendChild(link);
     }
 </script>

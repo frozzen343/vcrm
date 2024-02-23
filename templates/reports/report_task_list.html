@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+
+    <div class="card mt-0 mb-0" style="position: sticky; z-index: 50; top: 55px;">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb align-items-center mb-0" style="background-color: #ffffff;">
+                <div id="backButton" class="totooltip pr-2" data-tooltip="Назад">
+                    <a class="btn btn-primary btn-fab btn-fab-mini btn-round" role="button">
+                        <i class="material-icons" style="color: white;">arrow_back</i>
+                    </a>
+                </div>
+                <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
+                <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main_reports' %}">Отчёты</a></li>
+                <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'hours_reports' %}">Отчёт по часам</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page"><b>Детализация задач</b></li>
+            </ol>
+        </nav>
+    </div>
+    <hr>
+
+    <div class="card" style="margin-top: 0px;">
+        <div class="card-body">
+            <div class="row justify-content-between mb-1">
+                <div class="form-group mt-2 pb-0 mb-0">
+                        <ul class="pagination pagination-info" id="tasks_pagination" style="justify-content: center;"></ul>
+                </div>
+            </div>
+            <hr class="mb-0">
+            <table class="delivery table mb-0 btn-outline" id="table_sort">
+                <thead>
+                <tr class="text-center text-xxl-center">
+                    <th class="text-uppercase text-secondary mb-0" style="font-weight: bold; font-size: 14px">Постановщик</th>
+                    <th class="text-uppercase text-secondary mb-0" style="font-weight: bold; font-size: 14px">Заголовок</th>
+                    <th class="text-uppercase text-secondary mb-0" style="font-weight: bold; font-size: 14px">Статус</th>
+                    <th class="text-uppercase text-secondary mb-0" style="font-weight: bold; font-size: 14px">Ответственный</th>
+                    <th class="text-uppercase text-secondary mb-0" style="font-weight: bold; font-size: 14px">Поставлена / Закрыта</th>
+                </tr>
+                </thead>
+                <style>
+                    .table th, .table td {
+                        padding: 0.5rem;
+                    }
+                    .card .card-body, .card .card-footer {
+                        padding: 0.8rem 1.8rem;
+                    }
+                </style>
+                <tbody id="tasks-row-container">
+                <tr>
+                    <td></td><td></td><td></td><td>
+                    <div class="spinner h2">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    {% include "tasks/scripts.html" %}
+{% endblock %}

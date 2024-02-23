@@ -43,6 +43,13 @@
     }
 </script>
 
+<!-- кнопка назад -->
+<script>
+    document.getElementById("backButton").addEventListener("click", function() {
+        window.history.back();
+    });
+</script>
+
 <!-- форма select -->
 <script>
   {#feather.replace();#}
@@ -149,10 +156,10 @@
 <script>
   if (document.getElementById('img_main') != null){
     var images = new Array();
-    images[0] = "background-image: url('{% static 'imgs/backgrounds/winter.jpg' %}');background-size: cover; background-position: top center;";
-    images[1] = "background-image: url('{% static 'imgs/backgrounds/spring.jpg' %}');background-size: cover; background-position: top center;";
-    images[2] = "background-image: url('{% static 'imgs/backgrounds/summer.jpg' %}');background-size: cover; background-position: top center;";
-    images[3] = "background-image: url('{% static 'imgs/backgrounds/autumn.jpg' %}');background-size: cover; background-position: top center;";
+    images[0] = "background-image: url('{% static 'imgs/backgrounds/winter.jpg' %}');background-size: inherit; background-position: top center;";
+    images[1] = "background-image: url('{% static 'imgs/backgrounds/spring.jpg' %}');background-size: inherit; background-position: top center;";
+    images[2] = "background-image: url('{% static 'imgs/backgrounds/summer.jpg' %}');background-size: inherit; background-position: top center;";
+    images[3] = "background-image: url('{% static 'imgs/backgrounds/autumn.jpg' %}');background-size: inherit; background-position: top center;";
 
     document.addEventListener("DOMContentLoaded", function()
     {

@@ -7,8 +7,10 @@ from django.utils import timezone
 from io import BytesIO
 import pandas as pd
 
+from clients.models import Client
 from reports.utils import make_hours_table
 from tasks.models import Task
+from users.models import User
 
 
 class HoursReportAPIView(APIView):
@@ -23,9 +25,7 @@ class HoursReportAPIView(APIView):
                                 date_closed__year=year,
                                 # performer__isnull=False,
                                 status='Выполнена')
-                        .values('performer__first_name',
-                                'performer__last_name',
-                                'client__name')
+                        .values('performer__id', 'client__id')
                         .annotate(total_hours=Sum('hours_cost')))
 
         if len(report_hours) == 0:
@@ -33,15 +33,25 @@ class HoursReportAPIView(APIView):
 
         data = {}
         for report in report_hours:
-            performer_name = (f"{report['performer__first_name']} "
-                              f"{report['performer__last_name']}")
-            client_name = report['client__name']
+            performer_id = report['performer__id']
+            client_name = report['client__id']
             total_hours = report['total_hours']
             if client_name not in data:
                 data[client_name] = {}
-            data[client_name][performer_name] = total_hours
+            data[client_name][performer_id] = total_hours
 
-        return Response({'data': data})
+        users = (User.objects
+                 .filter(is_active=True)
+                 .values('first_name', 'last_name', 'id')
+                 .all())
+        report_clients_id = report_hours.values_list('client_id',
+                                                     flat=True).distinct()
+        clients = (Client.objects
+                   .filter(id__in=report_clients_id)
+                   .values('name', 'id')
+                   .all())
+
+        return Response({'clients': clients, 'users': users, 'data': data})
 
 
 class DownloadExcelAPIView(APIView):

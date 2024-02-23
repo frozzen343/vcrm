@@ -2,9 +2,14 @@
 {% load widget_tweaks %}
 {% block content %}
 
-    <div class="card" style="display: revert; margin-bottom: 0px; margin-top: 0px">
+    <div class="card mt-0 mb-0" style="position: sticky; z-index: 50; top: 55px;">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb" style="background-color: #ffffff;">
+            <ol class="breadcrumb align-items-center mb-0" style="background-color: #ffffff;">
+                <div id="backButton" class="totooltip pr-2" data-tooltip="Назад">
+                    <a class="btn btn-primary btn-fab btn-fab-mini btn-round" role="button">
+                        <i class="material-icons" style="color: white;">arrow_back</i>
+                    </a>
+                </div>
                 <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
                 <li class="breadcrumb-item text-dark active" aria-current="page"><b>Задачи</b></li>
             </ol>
@@ -36,9 +41,8 @@
                                 Новая
                             </a>
                         </li>
-
                         <li class="nav-item">
-                            <a class="nav-link task-status-bar active" data-toggle="tab" href="#" role="tablist" aria-expanded="false">
+                            <a class="nav-link task-status-bar" data-toggle="tab" href="#" role="tablist" aria-expanded="false">
                                 В работе
                             </a>
                         </li>
@@ -68,6 +72,25 @@
                 </div>
             </div>
             <hr class="mb-0">
+            <style>
+                .table {
+                    table-layout: fixed;
+                    {#overflow-y: scroll;#}
+                }
+                .table tr {
+                    opacity: 0;
+                    transition: opacity 0.5s ease; 
+                }
+                .table tr.show {
+                    opacity: 1;
+                }
+                .table th, .table td {
+                    padding: 0.5rem;
+                }
+                .card .card-body, .card .card-footer {
+                    padding: 0.8rem 1.8rem;
+                }
+            </style>
             <table class="delivery table mb-0 btn-outline" id="table_sort">
                 <thead>
                 <tr class="text-center text-xxl-center">
@@ -78,14 +101,7 @@
                     <th class="text-uppercase text-secondary mb-0" style="font-weight: bold; font-size: 14px">Поставлена / Закрыта</th>
                 </tr>
                 </thead>
-                <style>
-                    .table th, .table td {
-                        padding: 0.5rem;
-                    }
-                    .card .card-body, .card .card-footer {
-                        padding: 0.8rem 1.8rem;
-                    }
-                </style>
+
                 <tbody id="tasks-row-container">
                 <tr>
                     <td></td><td></td><td></td><td>

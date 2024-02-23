@@ -47,3 +47,12 @@ class HoursReportView(TemplateView):
         if not request.user.has_perm('perms.view_users_report'):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
+
+
+class TaskListReportView(TemplateView):
+    template_name = 'reports/report_task_list.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('perms.view_users_report'):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)

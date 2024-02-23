@@ -1,18 +1,16 @@
 <script>
     $(document).ready(function(){
-        CurrentUserID = 0;
         var navLinks = document.querySelectorAll('.task-status-bar');
         navLinks.forEach(function(link) {
             link.addEventListener('click', function() {
                 var status = this.textContent.trim();
-                task_list(status);
+                url_set_arg("page", 1);
+                url_set_arg("status", status);
+                task_list();
             });
         });
 
         GetUserList();
-        var activeElement = document.querySelector('.nav-link.active');
-        var status = activeElement.textContent.trim();
-        task_list(status);
     });
 
     function forced_mail_get() {
@@ -29,7 +27,8 @@
             success: function(response){
                 var nav_text = document.getElementById('navbar_new_task');
                 if (nav_text.classList.contains('active')) {
-                    task_list('Новая');
+                    url_set_arg("status", "Новая");
+                    task_list();
                 }
                 showNotification('success', response.message);
                 get_mail_button.empty();
@@ -50,37 +49,69 @@
             url: "{% url 'api_user_list' %}",
             data: $(this).serialize(),
             success: function(response){
+                var currentUrl = new URL(window.location.href);
+                var task_performer = currentUrl.searchParams.get("performer");
+                
                 const UserListOptions = $("#user-list-options");
                 UserListOptions.empty();
-                UserListOptions.append('<select id="userSelect" onchange="task_list(document.querySelector(\'.nav-link.active\').textContent.trim())"  class="selectpicker" data-size="7" data-style="p-1 btn btn-outline btn-round text-end" title="Single Select" tabindex="-98">')
+                UserListOptions.append('<select id="userSelect" onchange="url_set_arg(\'performer\', this.value); url_set_arg(\'page\', 1); task_list();" class="selectpicker" data-size="7" data-style="p-1 btn btn-outline btn-round text-end" title="Single Select" tabindex="-98">')
                 var select = $('#userSelect');
                 response.results.forEach(function(user) {
                     var fullName = user.last_name + ' ' + user.first_name;
                     if (!user.current_user) {
                         select.append('<option value="' + user.id + '">' + fullName + '</option>');
                     } else {
-                        CurrentUserID = user.id;
                         select.append('<option value="' + user.id + '" selected="">' + fullName + '</option>');
+                        if (!task_performer) { url_set_arg('performer', user.id); }
                     }
-
-                });
+                })
+                select.append('<option value="all">Все</option>');
                 UserListOptions.append('</select>');
                 select.selectpicker('refresh');
+                
+                if(task_performer) {
+                    $('#userSelect option').each(function () {
+                        if ($(this).val() === task_performer) {
+                            $(this).prop('selected', true);
+                            select.selectpicker('refresh');
+                        }
+                    });
+                }
+                task_list();
+            },
+            error: function(response){
+                task_list();
             }
         });
+        
     }
 
-    function task_list(status, url_link=null)    {
-        var link_status = "status=" + status;
-        if (!url_link) {
-            url_link = "{% url 'api_task_list' %}?"+link_status;
-            if (CurrentUserID !== 0 && status !== 'Новая') {
-                var select = document.getElementById("userSelect");
-                var selectedValue = select.options[select.selectedIndex].value;
-                var link_performer = "&performer=" + selectedValue;
-                url_link += link_performer;
-            }
-        }
+    function task_list()    {
+        var currentUrl = new URL(window.location.href);
+        var task_status = currentUrl.searchParams.get("status") || "В работе";
+
+        var task_page = currentUrl.searchParams.get("page");
+        if (task_page) {
+            var link_page = "&page="+task_page;
+        } else { var link_page = ""; }
+
+        var task_client = currentUrl.searchParams.get("client_id");
+        if (task_client) {
+            var link_client = "&client_id="+task_client;
+        } else { var link_client = ""; }
+
+        var task_performer = currentUrl.searchParams.get("performer");
+        if (task_performer && task_performer !== 'all' && task_status !== 'Новая') {
+            var link_performer = "&performer="+task_performer;
+        } else { var link_performer = ""; }
+        
+        var task_full_month = currentUrl.searchParams.get("full_month");
+        if (task_full_month) {
+            var link_full_month = "&full_month="+task_full_month;
+        } else { var link_full_month = ""; }
+
+        var url_link = "{% url 'api_task_list' %}?status="+task_status+link_page+link_client+link_performer+link_full_month;
+
         $.ajax({
             url: url_link,
             data: $(this).serialize(),
@@ -91,6 +122,14 @@
                 response.results.forEach(function (task) {
                     const TaskTable = generateTaskRow(task);
                     tasksContainer.append(TaskTable);
+                });
+
+                var tableRows = document.querySelectorAll('#table_sort tr');
+                var delay = 70;
+                tableRows.forEach(function(row, index) {
+                    setTimeout(function() {
+                        row.classList.add('show');
+                        }, delay * index);
                 });
 
                 <!-- pagination -->
@@ -111,7 +150,10 @@
                     if (response.previous) {
                         var prev = $('<li class="page-item"><a class="page-link" herf="#">Назад</a></li>');
                         prev.click(function () {
-                            task_list(status, url_link = response.previous);
+                            var prev_url = new URL(response.previous);
+                            var task_page = prev_url.searchParams.get("page") || 1;
+                            url_set_arg("page", task_page)
+                            task_list();
                         });
                         paginationElement.append(prev)
                     }
@@ -122,16 +164,32 @@
                     if (response.next) {
                         var next = $('<li class="page-item"><a class="page-link" herf="#">Далее</a></li>');
                         next.click(function () {
-                            task_list(status, url_link = response.next);
+                            var next_url = new URL(response.next);
+                            var task_page = next_url.searchParams.get("page");
+                            url_set_arg("page", task_page)
+                            task_list();
                         });
                         paginationElement.append(next)
                     }
                 }
 
-
+                var currentUrl = new URL(window.location.href);
+                var task_status = currentUrl.searchParams.get("status") || "В работе";
+                const navLinks = document.querySelectorAll('a.nav-link.task-status-bar');
+                navLinks.forEach(navLink => {
+                    if (navLink.textContent.trim() === task_status) {
+                        navLink.classList.add('active');
+                    }
+                });
 
             }
         });
+    }
+    
+    function url_set_arg(name, value) {
+        var currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set(name, value);
+        window.history.replaceState({}, '', currentUrl);
     }
 
     function generateTaskRow(task) {
