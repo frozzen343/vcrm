@@ -43,13 +43,15 @@ class HoursReportAPIView(APIView):
         users = (User.objects
                  .filter(is_active=True)
                  .values('first_name', 'last_name', 'id')
-                 .all())
+                 .all()
+                 .order_by('first_name'))
         report_clients_id = report_hours.values_list('client_id',
                                                      flat=True).distinct()
         clients = (Client.objects
                    .filter(id__in=report_clients_id)
                    .values('name', 'id')
-                   .all())
+                   .all()
+                   .order_by('name'))
 
         return Response({'clients': clients, 'users': users, 'data': data})
 

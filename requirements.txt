@@ -1,4 +1,4 @@
-django==5.0.2
+django==4.2.10
 django-filter==23.5
 djangorestframework==3.14.0
 django-widget-tweaks==1.5.0
@@ -7,7 +7,7 @@ celery==5.3.6
 redis==5.0.1
 Pillow==10.2.0
 django-tinymce==3.7.1
-pandas==2.2.0
+pandas==2.2.1
 openpyxl==3.1.2
 imap-tools==1.5.0
 gunicorn==21.2.0
