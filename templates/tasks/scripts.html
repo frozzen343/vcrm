@@ -193,12 +193,13 @@
     }
 
     function generateTaskRow(task) {
+        {% load static %}
         var url = "{% url 'task_edit' pk='000666000' %}".replace('000666000', task.id);
         return `
                         <tr style="cursor: pointer;" onclick="window.location.href='${url}'">
                           <td aria-label="Постановщик" class="col-lg-3">
                             <div class="d-flex justify-content-arounds p-0">
-                                <img src="http://cdn.onlinewebfonts.com/svg/img_110805.png" style="height: 40px; width: 40px; margin-right: 3px;" class="avatar avatar-sm me-3">
+                                <img src="{% static 'imgs/task_icons/' %}${task.created_from}.png" style="height: 40px; width: 40px; margin-right: 3px;" class="avatar avatar-sm me-3">
                                 <div class="d-flex flex-column justify-content-center">
                                     <h6 class="mb-0 text-xs">${task.mail !== null ? task.mail.from_name : (task.contacts !== null ? task.contacts : '-')}</h6>
                                     <p class="text-xs text-secondary mb-0">${task.client !== null ? task.client.name : '-'}</p>

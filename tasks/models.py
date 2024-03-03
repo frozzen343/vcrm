@@ -39,6 +39,8 @@ class Task(models.Model):
     drive = models.BooleanField('С выездом', default=False)
     date_created = models.DateTimeField('Дата создания', auto_now_add=True)
     date_closed = models.DateTimeField('Дата закрытия', null=True)
+    created_from = models.CharField('Создано', default='vcrm',
+                                    null=False, blank=False, max_length=30)
     contacts = models.CharField(
         'Контакты', max_length=90, null=True, blank=True)
     performer = models.ForeignKey(User,

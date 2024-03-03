@@ -71,6 +71,7 @@ def create_task_from_mail(subject, text, from_email, mail):
     task = Task(title=subject,
                 description=text,
                 contacts=from_email,
+                created_from='mail',
                 mail=mail)
     contact = Contact.objects.filter(contact=from_email).first()
     if contact:

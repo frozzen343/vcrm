@@ -34,5 +34,6 @@ class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ('id', 'title', 'status', 'contacts', 'mail', 'client',
-                  'performer', 'fire', 'drive', 'date_created', 'date_closed')
+                  'performer', 'fire', 'drive', 'date_created', 'date_closed',
+                  'created_from')
         read_only_fields = ('id',)
