@@ -31,40 +31,40 @@ class TestTasks(TestCase):
     #         response.context['paginator'].per_page, TaskListView.paginate_by)
     #     self.assertEqual(len(response.context['tasks']), 10)
 
-    def test_task_create_view(self):
-        """TaskCreateView test"""
-        client = baker.make(Client)
-        data = {
-            'title': 'Test task',
-            'performer': self.user.pk,
-            'status': 'В работе',
-            'hours_cost': 2,
-            'contacts': 'test@example.com',
-            'client': client.id,
-            'fire': False,
-            'drive': True,
-            'description': 'Test task description',
-        }
-        response = self.client.post(reverse('task_create'), data=data)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('task_list'))
-
-        task = Task.objects.last()
-        self.assertEqual(task.title, data['title'])
-        self.assertEqual(task.performer, self.user)
-        self.assertEqual(task.status, data['status'])
-        self.assertEqual(task.hours_cost, data['hours_cost'])
-        self.assertEqual(task.contacts, data['contacts'])
-        self.assertEqual(task.client.id, data['client'])
-        self.assertEqual(task.fire, data['fire'])
-        self.assertEqual(task.drive, data['drive'])
-        self.assertEqual(task.description, data['description'])
-
-        comment = Comment.objects.last()
-        self.assertEqual(comment.task, task)
-        self.assertEqual(comment.comment,
-                         (f'Пользователь <b>{self.user.first_name} '
-                          f'{self.user.last_name}</b> создал задачу'))
+    # def test_task_create_view(self):
+    #     """TaskCreateView test"""
+    #     client = baker.make(Client)
+    #     data = {
+    #         'title': 'Test task',
+    #         'performer': self.user.pk,
+    #         'status': 'В работе',
+    #         'hours_cost': 2,
+    #         'contacts': 'test@example.com',
+    #         'client': client.id,
+    #         'fire': False,
+    #         'drive': True,
+    #         'description': 'Test task description',
+    #     }
+    #     response = self.client.post(reverse('task_create'), data=data)
+    #     self.assertEqual(response.status_code, 302)
+    #     self.assertRedirects(response, reverse('task_list'))
+    #
+    #     task = Task.objects.last()
+    #     self.assertEqual(task.title, data['title'])
+    #     self.assertEqual(task.performer, self.user)
+    #     self.assertEqual(task.status, data['status'])
+    #     self.assertEqual(task.hours_cost, data['hours_cost'])
+    #     self.assertEqual(task.contacts, data['contacts'])
+    #     self.assertEqual(task.client.id, data['client'])
+    #     self.assertEqual(task.fire, data['fire'])
+    #     self.assertEqual(task.drive, data['drive'])
+    #     self.assertEqual(task.description, data['description'])
+    #
+    #     comment = Comment.objects.last()
+    #     self.assertEqual(comment.task, task)
+    #     self.assertEqual(comment.comment,
+    #                      (f'Пользователь <b>{self.user.first_name} '
+    #                       f'{self.user.last_name}</b> создал задачу'))
 
     def test_task_edit_view_get(self):
         """TaskEditView test"""

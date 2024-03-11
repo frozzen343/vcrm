@@ -11,4 +11,6 @@ urlpatterns = [
 
     path('api/v1/task_list', views_api.TaskListAPIView.as_view(),
          name='api_task_list'),
+    path('api/v1/task_create', views_api.TaskCreateAPIView.as_view(),
+         name='api_task_create'),
 ]

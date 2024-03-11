@@ -1,10 +1,16 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from datetime import datetime
 
 from tasks.models import Task
-from tasks.serializers import TaskListSerializer
+from tasks.serializers import TaskListSerializer, TaskCreateSerializer
+
+
+class TaskCreateAPIView(CreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskCreateSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class TaskListAPIView(ListAPIView):

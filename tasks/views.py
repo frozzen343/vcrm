@@ -1,12 +1,12 @@
 from django.urls import reverse_lazy
 from django.http.response import HttpResponseRedirect
-from django.views.generic.edit import UpdateView, CreateView
+from django.views.generic.edit import UpdateView
 from django.views.generic import TemplateView
 from django.core.exceptions import PermissionDenied
 
 from clients.models import Contact
 from tasks.models import Task, Comment
-from tasks.forms import CommentEditForm, TaskCreateForm
+from tasks.forms import CommentEditForm
 from mail.utils import send_mail_notice_task
 
 
@@ -40,31 +40,8 @@ class TaskListView(TemplateView):
     template_name = 'tasks/task_list.html'
 
 
-class TaskCreateView(CreateView):
+class TaskCreateView(TemplateView):
     template_name = 'tasks/task_create.html'
-    model = Task
-    success_url = reverse_lazy('task_list')
-    form_class = TaskCreateForm
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
-
-    def get_initial(self):
-        return {'performer': self.request.user}
-
-    def form_valid(self, form):
-        if not self.request.user.has_perm('perms.change_performer') and \
-                form.cleaned_data['performer'] and \
-                form.cleaned_data['performer'] != self.request.user:
-            raise PermissionDenied
-
-        comment = (f'Пользователь <b>{self.request.user.first_name} '
-                   f'{self.request.user.last_name}</b> создал задачу')
-        form.save()
-        Comment.objects.create(task=form.instance, comment=comment)
-        return super().form_valid(form)
 
 
 class TaskEditView(UpdateView):

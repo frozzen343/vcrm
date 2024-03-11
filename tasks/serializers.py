@@ -37,3 +37,11 @@ class TaskListSerializer(serializers.ModelSerializer):
                   'performer', 'fire', 'drive', 'date_created', 'date_closed',
                   'created_from')
         read_only_fields = ('id',)
+
+
+class TaskCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ('id', 'title', 'hours_cost', 'description', 'status',
+                  'contacts', 'client', 'performer', 'fire', 'drive')
+        read_only_fields = ('id',)

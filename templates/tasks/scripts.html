@@ -49,33 +49,37 @@
             url: "{% url 'api_user_list' %}",
             data: $(this).serialize(),
             success: function(response){
-                var currentUrl = new URL(window.location.href);
-                var task_performer = currentUrl.searchParams.get("performer");
-                
-                const UserListOptions = $("#user-list-options");
-                UserListOptions.empty();
-                UserListOptions.append('<select id="userSelect" onchange="url_set_arg(\'performer\', this.value); url_set_arg(\'page\', 1); task_list();" class="selectpicker" data-size="7" data-style="p-1 btn btn-outline btn-round text-end" title="Single Select" tabindex="-98">')
-                var select = $('#userSelect');
-                response.results.forEach(function(user) {
-                    var fullName = user.last_name + ' ' + user.first_name;
-                    if (!user.current_user) {
-                        select.append('<option value="' + user.id + '">' + fullName + '</option>');
-                    } else {
-                        select.append('<option value="' + user.id + '" selected="">' + fullName + '</option>');
-                        if (!task_performer) { url_set_arg('performer', user.id); }
-                    }
-                })
-                select.append('<option value="all">Все</option>');
-                UserListOptions.append('</select>');
-                select.selectpicker('refresh');
-                
-                if(task_performer) {
-                    $('#userSelect option').each(function () {
-                        if ($(this).val() === task_performer) {
-                            $(this).prop('selected', true);
-                            select.selectpicker('refresh');
+                if (response.length > 1) {
+                    var currentUrl = new URL(window.location.href);
+                    var task_performer = currentUrl.searchParams.get("performer");
+
+                    const UserListOptions = $("#user-list-options");
+                    UserListOptions.empty();
+                    UserListOptions.append('<select id="userSelect" onchange="url_set_arg(\'performer\', this.value); url_set_arg(\'page\', 1); task_list();" class="selectpicker" data-size="7" data-style="p-1 btn btn-outline btn-round text-end" title="Single Select" tabindex="-98">')
+                    var select = $('#userSelect');
+                    response.forEach(function (user) {
+                        var fullName = user.last_name + ' ' + user.first_name;
+                        if (!user.current_user) {
+                            select.append('<option value="' + user.id + '">' + fullName + '</option>');
+                        } else {
+                            select.append('<option value="' + user.id + '" selected="">' + fullName + '</option>');
+                            if (!task_performer) {
+                                url_set_arg('performer', user.id);
+                            }
                         }
-                    });
+                    })
+                    select.append('<option value="all">Все</option>');
+                    UserListOptions.append('</select>');
+                    select.selectpicker('refresh');
+
+                    if (task_performer) {
+                        $('#userSelect option').each(function () {
+                            if ($(this).val() === task_performer) {
+                                $(this).prop('selected', true);
+                                select.selectpicker('refresh');
+                            }
+                        });
+                    }
                 }
                 task_list();
             },

@@ -1,5 +1,6 @@
 from django.urls import path, re_path
 
+import clients.views_api as views_api
 from clients.views import (ClientListView,
                            ClientCreateView,
                            ClientEditView,
@@ -27,4 +28,7 @@ urlpatterns = [
     path('edit/<int:fk>/contacts/del/<int:pk>',
          ContactDeleteView.as_view(),
          name='contact_del'),
+
+    path('api/v1/client_list', views_api.ClientListAPIView.as_view(),
+         name='api_client_list'),
 ]

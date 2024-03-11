@@ -21,59 +21,82 @@
     <div class="card">
         <div class="card-body">
             <h4 class="Title" style="margin-left: 10px;">Новая задача <hr/> </h4>
+                <div class="row">
+                    <div class="col-lg-6">
 
-            <form method="POST">
-                {% csrf_token %}
-                <div class="content-section col-6">
-                    
-                    {% for field in form %}
-                        <div class="form-group text-left">
-                            {% if field == form.fire or field == form.drive %}
-                            <div class="form-check" style="margin-top: 30px;">
-                                <label class="form-check-label">
-                                    {{ field.label_tag }}
-                                    {{ field|attr:"class:form-check-input" }}
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
-                                </label>
-                            </div>
-                            {% else %}
-                                {{ field.label_tag }}
-                                <div class="text-muted">
-                                    <p>{{ field.help_text }}</p>
-                                </div>
-
-                                {% if field.errors %}
-                                    <div class="alert alert-danger" style="padding:0">
-                                        <div class="container">
-                                            <div class="alert-icon">
-                                                <i class="material-icons">error_outline</i>
-                                            </div>
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true"><i class="material-icons">clear</i></span>
-                                            </button>
-                                            <b>Ошибка:</b> {{ field.errors }}
-                                        </div>
-                                    </div>
-                                {% endif %}
-
-                                {{ field|attr:"class:form-control from-control-lg" }}
-
-                            {% endif %}
+                        <div class="form-group bmd-form-group mb-0">
+                            <label for="task_title" class="bmd-label-floating">Заголовок</label>
+                            <input type="text" class="form-control" id="task_title">
                         </div>
-                    {% endfor %}
 
-                    <div class="form-group">
+                        <div class="form-group bmd-form-group">
+                            <label for="task_contacts_input" class="bmd-label-floating">Контакты</label>
+                            <input type="text" class="form-control" id="task_contacts">
+                        </div>
+
+                        <div class="mt-1 mr-4" id="user-list-options">
+                        </div>
+
+                        <div class="mt-1 mr-4">
+                            <select id="task_status" class="selectpicker" data-size="7" data-style="p-1 btn btn-outline btn-round text-end" title="Статус задачи" tabindex="-98">
+                                <option value="Новая">Новая</option>
+                                <option value="В работе">В работе</option>
+                                <option value="Выполнена">Выполнена</option>
+                                <option value="Отложена">Отложена</option>
+                                <option value="Не задача">Не задача</option>
+                            </select>
+                        </div>
+
+                        <div class="mt-1 mr-4" id="client-list-options">
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group text-left">
+                                <div class="form-check ml-4 mr-4" style="margin-top: 30px;">
+                                    <label class="form-check-label" >
+                                        <label for="task_fire" style="cursor: pointer;">Срочная</label>
+                                        <input type="checkbox" class="form-check-input" id="task_fire">
+                                        <span class="form-check-sign">
+                                            <span class="check"></span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group text-left">
+                                <div class="form-check" style="margin-top: 30px;">
+                                    <label class="form-check-label" >
+                                        <label for="task_drive" style="cursor: pointer;">С выездом</label>
+                                        <input type="checkbox" class="form-check-input" id="task_drive">
+                                        <span class="form-check-sign">
+                                            <span class="check"></span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+
+                        <div class="form-group bmd-form-group mt-4">
+                            <label class="bmd-label-static">Суть задачи</label>
+                            <textarea id="task_create_textarea"></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group" id="submit_button">
                         <input class='btn btn-lg btn-block btn-outline-info' type="submit" value="Добавить">
                     </div>
                 </div>
-                
-                
-            </form>
+            </div>
         </div>
     </div>
 
 
 
+{% endblock %}
+{% block scripts %}
+    
+    {% include "tasks/task_create_script.html" %}
 {% endblock %}

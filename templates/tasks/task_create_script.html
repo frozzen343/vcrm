@@ -1,0 +1,88 @@
+<script>
+    $(document).ready(function(){
+        GetUserList();
+        GetClientList();
+    });
+
+    $("#submit_button").on("click", function () {
+        const formData = {
+            title: $("#task_title").val(),
+            contacts: $("#task_contacts").val(),
+            performer: $("#userSelect").val(),
+            client: $("#clientSelect").val(),
+            status: $("#task_status").val(),
+            fire: $("#task_fire").is(":checked"),
+            drive: $("#task_drive").is(":checked"),
+            description: $("#task_create_textarea").val(),
+        };
+        if (!formData.title) {
+            showNotification('danger', "Ошибка: Не указан заголовок.");
+        } else if (!formData.status) {
+            showNotification('danger', "Ошибка: Не указан статус задачи.");
+        } else if (!formData.description) {
+            showNotification('danger', "Ошибка: Не указано описание задачи.");
+        } else if (formData.status === 'Новая' && formData.performer) {
+            showNotification('danger', "Ошибка: В задаче со статусом 'Новая' не может быть исполнителя, только со статусом 'В работе'.");
+        } else if (formData.status === 'В работе' && !formData.performer) {
+            showNotification('danger', "Ошибка: В задаче со статусом 'В работе' должен быть исполнитель задачи.");
+        } else if (formData.status === 'Выполнена' && !formData.performer) {
+            showNotification('danger', "Ошибка: В задаче со статусом 'Выполнена' должен быть исполнитель задачи.");
+        } else {
+            $.ajax({
+                url: "{% url 'api_task_create' %}",
+                type: "POST",
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                data: formData,
+                success: function(response) {
+                    window.location.href = "{% url 'task_list' %}";
+                },
+                error: function(err) {
+                    console.log(err);
+                    showNotification('danger', err.responseText);
+                }
+            });
+        }
+
+    });
+</script>
+<script>
+    function GetUserList() {
+        $.ajax({
+            url: "{% url 'api_user_list' %}",
+            data: $(this).serialize(),
+            success: function(response){
+                const UserListOptions = $("#user-list-options");
+                UserListOptions.empty();
+                UserListOptions.append('<select id="userSelect" class="selectpicker" data-size="7" data-style="p-1 btn btn-outline btn-round text-end" title="Исполнитель задачи" tabindex="-98">')
+                var select = $('#userSelect');
+                response.forEach(function(user) {
+                    var fullName = user.last_name + ' ' + user.first_name;
+                    select.append('<option value="' + user.id + '">' + fullName + '</option>');
+                })
+                select.append('<option value="">Не указан</option>');
+                UserListOptions.append('</select>');
+                select.selectpicker('refresh');
+
+            }
+        });
+    }
+
+    function GetClientList() {
+        $.ajax({
+            url: "{% url 'api_client_list' %}",
+            data: $(this).serialize(),
+            success: function(response){
+                const ClientListOptions = $("#client-list-options");
+                ClientListOptions.empty();
+                ClientListOptions.append('<select id="clientSelect" class="selectpicker" data-size="7" data-style="p-1 btn btn-outline btn-round text-end" title="Клиент" tabindex="-98">')
+                var select = $('#clientSelect');
+                response.forEach(function(client) {
+                    select.append('<option value="' + client.id + '">' + client.name + '</option>');
+                })
+                ClientListOptions.append('</select>');
+                select.selectpicker('refresh');
+
+            }
+        });
+    }
+</script>
