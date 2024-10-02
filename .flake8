@@ -9,3 +9,4 @@ exclude =
   */migrations
   manage.py
   settings.py
+  apps.py

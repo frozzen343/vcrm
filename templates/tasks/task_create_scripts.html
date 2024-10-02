@@ -1,10 +1,13 @@
 <script>
     $(document).ready(function(){
+        froala('#task_create_textarea');
         GetUserList();
         GetClientList();
     });
 
     $("#submit_button").on("click", function () {
+        document.getElementById("submit_button").style.display = 'none';
+        document.getElementById("submit_button_loading").style.display = 'inline-block';
         const formData = {
             title: $("#task_title").val(),
             contacts: $("#task_contacts").val(),
@@ -17,19 +20,31 @@
         };
         if (!formData.title) {
             showNotification('danger', "Ошибка: Не указан заголовок.");
+            document.getElementById("submit_button").style.display = 'inline';
+            document.getElementById("submit_button_loading").style.display = 'none';
         } else if (!formData.status) {
             showNotification('danger', "Ошибка: Не указан статус задачи.");
+            document.getElementById("submit_button").style.display = 'inline';
+            document.getElementById("submit_button_loading").style.display = 'none';
         } else if (!formData.description) {
             showNotification('danger', "Ошибка: Не указано описание задачи.");
+            document.getElementById("submit_button").style.display = 'inline';
+            document.getElementById("submit_button_loading").style.display = 'none';
         } else if (formData.status === 'Новая' && formData.performer) {
             showNotification('danger', "Ошибка: В задаче со статусом 'Новая' не может быть исполнителя, только со статусом 'В работе'.");
+            document.getElementById("submit_button").style.display = 'inline';
+            document.getElementById("submit_button_loading").style.display = 'none';
         } else if (formData.status === 'В работе' && !formData.performer) {
             showNotification('danger', "Ошибка: В задаче со статусом 'В работе' должен быть исполнитель задачи.");
+            document.getElementById("submit_button").style.display = 'inline';
+            document.getElementById("submit_button_loading").style.display = 'none';
         } else if (formData.status === 'Выполнена' && !formData.performer) {
             showNotification('danger', "Ошибка: В задаче со статусом 'Выполнена' должен быть исполнитель задачи.");
+            document.getElementById("submit_button").style.display = 'inline';
+            document.getElementById("submit_button_loading").style.display = 'none';
         } else {
             $.ajax({
-                url: "{% url 'api_task_create' %}",
+                url: "{% url 'task-list' %}",
                 type: "POST",
                 headers: { 'X-CSRFToken': getCookie('csrftoken') },
                 data: formData,
@@ -37,11 +52,11 @@
                     window.location.href = "{% url 'task_list' %}";
                 },
                 error: function(err) {
-                    console.log(err);
                     showNotification('danger', err.responseText);
                 }
             });
         }
+        
 
     });
 </script>

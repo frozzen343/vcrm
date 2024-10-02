@@ -1,0 +1,534 @@
+<script>
+
+    $(document).ready(function(){
+        get_task_info();
+        // get_comments();
+
+        $('#attach_contact_button').click(function() {
+            const formData = {
+                contact: $("#input_task_contact").val(),
+                client: document.getElementById("task_client_select").value
+            };
+            $.ajax({
+                url: "{% url 'api_client_attach' %}",
+                type: "POST",
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                data: formData,
+                success: function (response) {
+                    $("#attach_contact").empty();
+                    $('#Modal_Attach_Contact').modal('hide');
+                    showNotification('success', "Контакт сохранён.");
+                    get_task_info();
+                },
+                error: function(err) {
+                    console.log(err);
+                    showNotification('danger', err.responseText);
+                }
+            });
+        });
+
+        $('#take_task_button').click(function() {
+            document.getElementById("take_task_button").style.display = 'none';
+            document.getElementById("take_task_button_loading").style.display = 'inline-block';
+            const url = window.location.href;
+            const task_id = url.substring(url.lastIndexOf('/') + 1);
+            const formData = {
+                status: "В работе",
+                mail_notice: $("#task_notice_take").is(":checked")
+            };
+            $.ajax({
+                url: "{% url 'task-list' %}"+task_id+"/",
+                type: "PATCH",
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                data: formData,
+                success: function (response) {
+                    $('#Modal_Task_Take').modal('hide');
+                    get_task_info();
+                },
+                error: function(err) {
+                    console.log(err);
+                    showNotification('danger', err.responseText);
+                }
+            });
+        });
+
+        $('#done_task_button').click(function() {
+            document.getElementById("done_task_button").style.display = 'none';
+            document.getElementById("done_task_button_loading").style.display = 'inline-block';
+            const url = window.location.href;
+            const task_id = url.substring(url.lastIndexOf('/') + 1);
+            const formData = {
+                status: "Выполнена",
+                mail_notice: $("#task_notice_done").is(":checked")
+            };
+
+            if ($('#task_client').text() === '-') {
+                $('#Modal_Task_Done').modal('hide');
+                showNotification('danger', 'Ошибка: Не указана организация');
+            } else {
+                $.ajax({
+                url: "{% url 'task-list' %}"+task_id+"/",
+                type: "PATCH",
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                data: formData,
+                success: function (response) {
+                    $('#Modal_Task_Done').modal('hide');
+                    get_task_info();
+                },
+                error: function(err) {
+                    console.log(err);
+                    showNotification('danger', err.responseText);
+                }
+            });
+            }
+        });
+
+        $('#postpone_task_button').click(function() {
+            const url = window.location.href;
+            const task_id = url.substring(url.lastIndexOf('/') + 1);
+            const formData = {
+                status: "Отложена"
+            };
+            $.ajax({
+                url: "{% url 'task-list' %}"+task_id+"/",
+                type: "PATCH",
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                data: formData,
+                success: function (response) {
+                    $('#Modal_Task_Postpone').modal('hide');
+                    get_task_info();
+                },
+                error: function(err) {
+                    console.log(err);
+                    showNotification('danger', err.responseText);
+                }
+            });
+        });
+
+        $('#down_task_button').click(function() {
+            const url = window.location.href;
+            const task_id = url.substring(url.lastIndexOf('/') + 1);
+            const formData = {
+                status: "Не задача"
+            };
+            $.ajax({
+                url: "{% url 'task-list' %}"+task_id+"/",
+                type: "PATCH",
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                data: formData,
+                success: function (response) {
+                    $('#Modal_Task_Down').modal('hide');
+                    get_task_info();
+                },
+                error: function(err) {
+                    console.log(err);
+                    showNotification('danger', err.responseText);
+                }
+            });
+        });
+
+        $('#task_description_save').click(function() {
+            const url = window.location.href;
+            const task_id = url.substring(url.lastIndexOf('/') + 1);
+            const formData = {
+                description: $('#task_description_textarea').val()
+            };
+            $.ajax({
+                url: "{% url 'task-list' %}"+task_id+"/",
+                type: "PATCH",
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                data: formData,
+                success: function (response) {
+                    $('#Modal_Edit').modal('hide');
+                    get_task_info();
+                },
+                error: function(err) {
+                    console.log(err);
+                    showNotification('danger', err.responseText);
+                }
+            });
+        });
+        
+        $('#comments_comment').click(function() {
+            get_comments('comment');
+            clear_comment_placement(type='comment');
+        });
+        $('#comments_history').click(function() {
+            get_comments('history');
+            var comment_container = $('#add_comment_placement');
+            comment_container.empty();
+        });
+        $('#comments_note').click(function() {
+            get_comments('note');
+            clear_comment_placement(type='note');
+        });
+
+        // clear_comment_placement();
+
+
+    });
+
+
+    function client_change() {
+        const url = window.location.href;
+        const task_id = url.substring(url.lastIndexOf('/') + 1);
+        var selectedValue = document.getElementById("task_client_select").value;
+        const formData = {
+            client: selectedValue
+        };
+        $.ajax({
+            url: "{% url 'task-list' %}"+task_id+"/",
+            type: "PATCH",
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            data: formData,
+            success: function (response) {
+                get_task_info();
+            },
+            error: function(err) {
+                showNotification('danger', err.responseText);
+            }
+        });
+    }
+
+    function user_change() {
+        const url = window.location.href;
+        const task_id = url.substring(url.lastIndexOf('/') + 1);
+        var selectedValue = document.getElementById("user_list_select").value;
+        const formData = {
+            performer: selectedValue
+        };
+        $.ajax({
+            url: "{% url 'task-list' %}"+task_id+"/",
+            type: "PATCH",
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            data: formData,
+            success: function (response) {
+                get_task_info();
+            },
+            error: function(err) {
+                showNotification('danger', err.responseText);
+            }
+        });
+    }
+
+    function get_task_info() {
+        document.getElementById("take_task_button").style.display = 'inline';
+        document.getElementById("take_task_button_loading").style.display = 'none';
+        document.getElementById("done_task_button").style.display = 'inline';
+        document.getElementById("done_task_button_loading").style.display = 'none';
+        const url = window.location.href;
+        const task_id = url.substring(url.lastIndexOf('/') + 1);
+        const url_link = "{% url 'task-list' %}"+task_id+"/";
+        const task_description = froala("#task_description_textarea");
+
+        $.ajax({
+            url: url_link,
+            data: $(this).serialize(),
+            success: function(response){
+                $("#task_number").html('<b>Задача №'+response.id+'</b>');
+                $("#task_title").text(response.title);
+                $("#attach_contact").empty();
+                var iframe = document.getElementById('task_description');
+                var iframeDocument = iframe.contentWindow.document;
+                iframeDocument.body.innerHTML = response.description;
+
+                if (response.created_from === 'vcrm') {
+                    document.getElementById('edit_modal_show').style.display='inline';
+                    var textarea = document.getElementById("task_description_textarea");
+                    textarea.value = response.description;
+                    task_description.html.set(response.description);
+                }
+                
+                $("#status_badge").empty();
+                $("#status_badge").append($(GetStatusBadge(response.status)));
+                if(response.drive) {
+                    $("#status_badge").append($('<span class="material-icons" style="margin-left:3px">directions_car</span>'));
+                }
+                if(response.fire) {
+                    $("#status_badge").append($('<span class="material-icons" style="margin-left:3px">local_fire_department</span>'));
+                }
+
+                $.ajax({
+                    url: "{% url 'api_client_list' %}",
+                    data: $(this).serialize(),
+                    success: function(client_list){
+                        var select = $('#task_client_select');
+                        client_list.forEach(function (client) {
+                            if (response.client && response.client.name && client.name === response.client.name) {
+
+                                select.append('<option value="' + client.id + '" selected="">' + client.name + '</option>');
+                            } else {
+                                select.append('<option value="' + client.id + '">' + client.name + '</option>');
+                            }
+                        });
+                        $("#task_client_select").selectpicker('refresh');
+                    }
+                });
+
+                $("#task_contacts").empty();
+                $("#task_contacts").append($(`<input id="input_task_contact" value="${response.contacts !== null ? response.contacts : '' }" type="text" class="form-control align-middle" style="width:180px;" oninput="document.getElementById('span_save_task_contact').style.display='inline';">`));
+                if(response.contacts) {
+                    if (response.mail && response.contacts.includes('@')) {
+                        $('#modal_notice_task_take').empty();
+                        $('#modal_notice_task_take').append($(`<input class="form-check-input" id="task_notice_take" type="checkbox">
+                                                            Уведомить постановщика задачи
+                                                            <span class="form-check-sign"><span class="check"></span></span>`));
+                        $('#modal_notice_task_done').empty();
+                        $('#modal_notice_task_done').append($(`<input class="form-check-input" id="task_notice_done" type="checkbox">
+                                                            Уведомить постановщика задачи
+                                                            <span class="form-check-sign"><span class="check"></span></span>`));
+                    }
+                }
+                $('#task_contacts').append($('<span id="span_save_task_contact" style="cursor:pointer;display: none;" class="material-icons text-success align-middle">done</span>'));
+                $('#span_save_task_contact').click(function() {
+                    const url = window.location.href;
+                    const task_id = url.substring(url.lastIndexOf('/') + 1);
+                    const formData = {
+                        contacts: $('#input_task_contact').val()
+                    };
+                    $.ajax({
+                        url: "{% url 'task-list' %}"+task_id+"/",
+                        type: "PATCH",
+                        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                        data: formData,
+                        success: function (response) {
+                            get_task_info();
+                        },
+                        error: function(err) {
+                            showNotification('danger', err.responseText);
+                        }
+                    });
+                });
+
+                $("#task_hours").empty();
+                $("#task_hours").append($(`<input id="input_task_hours" value="${response.hours_cost !== null ? response.hours_cost : 0.5 }" type="number" step="0.5" min="0.5" class="form-control" style="width:180px;" oninput="document.getElementById('span_save_task_hours').style.display='inline';">`));
+                $('#task_hours').append($('<span id="span_save_task_hours" style="cursor:pointer;display: none;" class="material-icons text-success align-middle">done</span>'));
+                $('#span_save_task_hours').click(function() {
+                    const url = window.location.href;
+                    const task_id = url.substring(url.lastIndexOf('/') + 1);
+                    const formData = {
+                        hours_cost: $('#input_task_hours').val()
+                    };
+                    if ($('#input_task_hours').val() < 0.5) {
+                        showNotification('danger', 'Ошибка: Количество традозатрат в часах должно быть больше 0.5');
+                        get_task_info();
+                    } else {
+                        $.ajax({
+                            url: "{% url 'task-list' %}"+task_id+"/",
+                            type: "PATCH",
+                            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                            data: formData,
+                            success: function (response) {
+                                get_task_info();
+                            },
+                            error: function(err) {
+                                showNotification('danger', err.responseText);
+                            }
+                        });
+                    }
+                });
+
+                if(response.date_created) {
+                    $("#task_date_created").text(response.date_created);
+                }
+
+                const UserContainer = $("#task_user");
+                if(response.performer) {
+                    UserContainer.empty();
+                    var UserPerformer = $(`
+                        <div class="d-flex" style="font-size: 13px;">
+                            <img class="rounded-circle img-fluid" src="`+response.performer_info.avatar+`" style="height: 40px; width: 40px; margin-right: 3px;" alt="user img">
+                            <div class="d-flex flex-column justify-content-center"><p class="mb-0">`+response.performer_info.first_name+`</p><p class="mb-0">`+response.performer_info.last_name+`</p></div>
+                        </div>
+                    `);
+                    UserContainer.append(UserPerformer);
+                } else {
+                    UserContainer.text('-')
+                }
+
+                if(response.mail && response.mail.attachments && response.mail.attachments.length > 0) {
+                    const AttachmentsContainer = $("#task_mail_attachments");
+                    AttachmentsContainer.empty();
+                    var attachments = [];
+                    response.mail.attachments.forEach(function(attachment) {
+                        if (!attachment.inline) {
+                            attachments.push($('<div><a href = "'+attachment.file+'">'+decodeURIComponent(attachment.file.split('/').pop())+'</a></div>'));
+                        }
+                    });
+                    if (attachments.length > 0) {
+                        AttachmentsContainer.append($('<div class="text">Вложения</div>'));
+                        AttachmentsContainer.append(attachments);
+                    }
+                }
+
+                if(response.client && !response.is_related) {
+                    const AttachContainer = $("#attach_contact");
+                    AttachContainer.empty();
+                    AttachContainer.append($('<button class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#Modal_Attach_Contact">' +
+                                                    'Сохранить контакт</button>'));
+                    const AttachText = $("#text_attach_contact");
+                    AttachText.empty();
+                    AttachText.append($('<p class="text-muted">Привязать контакт <b>'+response.contacts+'</b><br> к клиенту <b>'+response.client.name+'</b> ?</p>'));
+
+                }
+                
+                $.ajax({
+                    url: "{% url 'api_user_detail' %}",
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        const perm_list = result.groups.map(function (item) {
+                            return item.name;
+                        });
+
+                        if (perm_list.includes("Редактирование закрытых задач") || response.status !== 'Выполнена') {
+                            const ButtonsContainer = $("#status_buttons");
+                            ButtonsContainer.empty();
+
+                            var accept_button = $('<button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#Modal_Task_Take" style="margin-right:15px;">' +
+                                                    '<i class="material-icons">done</i>Принять задачу</button>');
+                            var close_button = $('<button class="btn btn-success btn-sm" data-toggle="modal" data-target="#Modal_Task_Done" style="margin-right:15px;">' +
+                                                    '<i class="material-icons">done</i>Закрыть задачу</button>');
+                            var postpone_button = $('<button class="btn btn-rose btn-sm" data-toggle="modal" data-target="#Modal_Task_Postpone" style="margin-right:15px;">' +
+                                                    '<i class="material-icons">trending_up</i>Отложить</button>');
+                            var down_button = $('<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Modal_Task_Down" style="margin-right:15px;">' +
+                                                    '<i class="material-icons">close</i>Не задача</button>');
+
+                            if (response.status === 'Новая' || response.status === 'Отложена' || response.status === 'Не задача') {
+                                ButtonsContainer.append(accept_button);
+                            }
+                            if (response.status === 'В работе') {
+                                ButtonsContainer.append(close_button);
+                                ButtonsContainer.append(postpone_button);
+                            }
+                            if (response.status !== 'Не задача') {
+                                ButtonsContainer.append(down_button);
+                            }
+                        }
+
+                        if (!perm_list.includes("Редактирование закрытых задач")) {
+                            $('#no_perm_edit_done_task').empty();
+                            $('#no_perm_edit_done_task').append($('<br><p class=text-muted">После закрытия задачи, редактирование будет возможно </p>'+
+                                                                    '<p class=text-muted"><b>только через руководство</b></p>'));
+                        }
+                        if (perm_list.includes("Изменение исполнителя задач")) {
+                            $.ajax({
+                                url: "{% url 'api_user_list' %}",
+                                data: $(this).serialize(),
+                                success: function(user_list){
+                                    $('#task_user').append(`
+                                        <select id="user_list_select" title=" " onchange="user_change();" class="selectpicker" data-size="7" data-style="btn btn-link" tabindex="-98" data-width="0px">
+                                        </select>`)
+                                    var select = $('#user_list_select');
+                                    user_list.forEach(function (user) {
+                                        if (response.performer === user.id) {
+                                            select.append(`<option value="${user.id}" selected="">${user.first_name} ${user.last_name}</option>`);
+                                        } else {
+                                            select.append(`<option value="${user.id}">${user.first_name} ${user.last_name}</option>`);
+                                        }
+                                    });
+                                    select.append(`<option value="">Без исполнителя</option>`);
+                                    $('#user_list_select').selectpicker('refresh');
+                                }
+                            });
+                        }
+
+                    }
+                });
+
+            }
+        });
+    }
+    
+    function get_comments(comment_type='comment') {
+        const url = window.location.href;
+        const task_id = url.substring(url.lastIndexOf('/') + 1);
+        $.ajax({
+            url: "{% url 'comment-list' %}?comment_type="+comment_type+"&task="+task_id,
+            type: "GET",
+            success: function (response) {
+                var commentsContainer = $('#comments_table')
+                commentsContainer.empty();
+                response.results.forEach(function (comment) {
+                    const CommentRow = generateCommentRow(comment);
+                    commentsContainer.append(CommentRow);
+                });
+                console.log('{% url "comment-list"%}')
+            },
+            error: function(err) {
+                showNotification('danger', err.responseText);
+            }
+        });
+    }
+
+    function clear_comment_placement(comment_type='comment') {
+        var comment_container = $('#add_comment_placement');
+        comment_container.empty();
+        comment_container.append($(`<div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <img alt="Avatar" style="height: auto; width: 41px; margin-right: 3px;" class="rounded-circle img-fluid" src="{{ user.avatar.url }}"/>
+                                        </div>
+                                        <input type="text" class="form-control" placeholder="Добавить комментарий" id="add_comment_show">
+                                    </div>`));
+        $('#add_comment_show').click(function() {
+            var comment_container = $('#add_comment_placement');
+            comment_container.empty();
+            var textarea = document.createElement("textarea");
+            textarea.id = 'add_comment_textarea';
+            comment_container.append(textarea);
+            froala(textarea);
+            comment_container.append($('<button id="add_comment_button" class="btn btn-primary btn-round" type="button">Добавить</button>'));
+            $('#add_comment_button').click(function() {
+                var textarea = document.getElementById("add_comment_textarea");
+                const url = window.location.href;
+                const task_id = url.substring(url.lastIndexOf('/') + 1);
+                const formData = {
+                    task: task_id,
+                    comment_type: comment_type,
+                    comment: textarea.value
+                };
+                $.ajax({
+                    url: "{% url 'comment-list' %}",
+                    type: "POST",
+                    headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                    data: formData,
+                    success: function (response) {
+                        clear_comment_placement();
+                        get_comments(comment_type);
+                    },
+                    error: function(err) {
+                        showNotification('danger', err.responseText);
+                    }
+                });
+
+            });
+        });
+
+        
+
+    }
+    
+    function generateCommentRow(comment) {
+        return `
+        <tr>
+            <td width="30%">
+                <div class="d-flex px-2 py-1">
+                    <div>
+                        <img src="${ comment.avatar ? comment.avatar :  comment.performer ? comment.performer_info.avatar : '' }" style="height: auto; width: 36px; margin-right: 3px;" class="avatar avatar-sm me-3">
+                    </div>
+                    <div class="d-flex flex-column justify-content-center">
+                        ${ comment.performer ? 
+                        '<h6 class="mb-0 text-xs">'+comment.performer_info.first_name+' '+comment.performer_info.last_name+'</h6>' : 
+                        comment.user_name ? 
+                        '<h6 class="mb-0 text-xs">'+comment.user_name+'</h6>' : '' }                       
+                        <p class="text-xs text-secondary mb-0">${ comment.date_created }</p>
+                    </div>
+                </div>
+            </td>
+            <td width="70%" class="align-middle text-sm">
+                ${ comment.comment }
+            </td>
+        </tr>
+        `
+    }
+
+</script>

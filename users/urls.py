@@ -27,6 +27,8 @@ urlpatterns = [
          views.group_delete,
          name='group_del'),
 
+    path('api/v1/user_detail', views_api.UserDetails.as_view(),
+         name='api_user_detail'),
     path('api/v1/user_list', views_api.UserListAPIView.as_view(),
          name='api_user_list'),
 ]

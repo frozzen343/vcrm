@@ -29,6 +29,8 @@ urlpatterns = [
          ContactDeleteView.as_view(),
          name='contact_del'),
 
+    path('api/v1/client_attach', views_api.AttachContactToClient.as_view(),
+         name='api_client_attach'),
     path('api/v1/client_list', views_api.ClientListAPIView.as_view(),
          name='api_client_list'),
 ]

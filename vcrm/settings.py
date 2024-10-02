@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import configparser
 from pathlib import Path
 from os import getenv, path
+from pytz import timezone
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'silk',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
@@ -51,6 +54,7 @@ INSTALLED_APPS = [
     'reports',
     'mail',
     'settings',
+    'integrations',
 ]
 
 MIDDLEWARE = [
@@ -61,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'silk.middleware.SilkyMiddleware',
 ]
 
 ROOT_URLCONF = 'vcrm.urls'
@@ -94,7 +99,7 @@ DATABASES = {
         'PORT': getenv('PG_PORT', default='5432'),
         'NAME': getenv('POSTGRES_DB', default='vcrm'),
         'USER': getenv('POSTGRES_USER', default='username'),
-        'PASSWORD': getenv('POSTGRES_PASSWORD', default='userp@ss#!'),
+        'PASSWORD': getenv('POSTGRES_PASSWORD', default='userpAss78ogho7tggy'),
     }
 }
 
@@ -185,8 +190,24 @@ REST_FRAMEWORK = {
     },
 }
 
-REDIS_HOST = getenv('REDIS_HOST', default='127.0.0.1')
-REDIS_PORT = getenv('REDIS_PORT', default='6379')
-BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/1'
-BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
-CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/2'
+
+# load integrations.ini
+# config = configparser.ConfigParser()
+# config.read('integrations.ini')
+
+
+# class Integration:
+#     bitrix_enabled = config.getboolean('Settings', 'bitrix_enabled')
+#     bitrix_url = config.get('Settings', 'bitrix_url')
+#     bitrix_group_id = config.getint('Settings', 'bitrix_group_id')
+#     client_with_bitrix = config.getint('Settings', 'client_with_bitrix')
+
+#     @staticmethod
+#     def update(name, value):
+#         if hasattr(Integration, name):
+#             setattr(Integration, name, value)
+#             config['Settings'][name] = value
+#             with open('integrations.ini', 'w') as configfile:
+#                 config.write(configfile)
+#             return True
+#         return False

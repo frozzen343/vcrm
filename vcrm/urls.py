@@ -18,6 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 
+# import vcrm.views_api as views_api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,10 +29,21 @@ urlpatterns = [
     path('reports/', include('reports.urls')),
     path('mail/', include('mail.urls')),
     path('settings/', include('settings.urls')),
+
+    # path('settings/api/v1/test', views_api.TestAPIView.as_view(),
+    #         name='tests'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
-# if settings.DEBUG:
-#     urlpatterns = [
-#         path('__debug__/', include('debug_toolbar.urls')),
-#     ] + urlpatterns
+handler400 = 'main.views.handler400'
+handler403 = 'main.views.handler403'
+handler404 = 'main.views.handler404'
+handler500 = 'main.views.handler500'
+
+
+if settings.DEBUG:
+    urlpatterns = [
+        # path('__debug__/', include('debug_toolbar.urls')),
+        path('silk/', include('silk.urls', namespace='silk')),
+    ] + urlpatterns

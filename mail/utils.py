@@ -105,6 +105,9 @@ def load_new_mail():
                     text_html = text_html.replace("\"", '\'')  # to Iframe work
                     msg_to = convert_to_string(msg.to)
                     msg_cc = convert_to_string(msg.cc)
+                    if len(text_html) < 2:
+                        text_html = msg.text
+                        text_html = text_html.replace("\n", '<br>')
 
                     mail = Mail.objects.create(
                         messageid=msg.uid,
@@ -114,7 +117,7 @@ def load_new_mail():
                         cc=msg_cc,
                         date=msg.date,
                         subject=msg.subject if msg.subject else '(Без темы)',
-                        text_html=text_html if text_html else msg.text,
+                        text_html=text_html,
                         server_messageid=msg.headers['message-id'][0]
                     )
                     for att in msg.attachments:

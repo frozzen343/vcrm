@@ -1,6 +1,6 @@
 from tinymce.models import HTMLField
 from django.db import models
-from django.core.exceptions import ValidationError
+# from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.core.mail import send_mail
 
@@ -37,6 +37,7 @@ class Task(models.Model):
     description = HTMLField('Описание', null=True)
     fire = models.BooleanField('Срочная', default=False)
     drive = models.BooleanField('С выездом', default=False)
+    # todo: audo add default only
     date_created = models.DateTimeField('Дата создания', auto_now_add=True)
     date_closed = models.DateTimeField('Дата закрытия', null=True)
     created_from = models.CharField('Создано', default='vcrm',
@@ -61,6 +62,7 @@ class Task(models.Model):
                              blank=True,
                              on_delete=models.SET_NULL,
                              related_name='task')
+#    bitrix_id = models.IntegerField(null=True, blank=True, unique=True)
 
     __original_status = None
 
@@ -74,29 +76,6 @@ class Task(models.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__original_status = self.status
-
-    def clean(self):
-        if not self.client:
-            raise ValidationError({"client": "Клиент не установлен"})
-
-        if self.status == 'Новая' and self.performer:
-            self.status = 'В работе'
-            raise ValidationError(
-                {"status": ("В задаче со статусом 'Новая' не может быть "
-                            "исполнителя, только со статусом 'В работе'")}
-            )
-        if self.status == 'В работе' and not self.performer:
-            self.status = 'Новая'
-            raise ValidationError(
-                {"status": ("В задаче со статусом 'В работе' должен быть "
-                            "исполнитель задачи")}
-            )
-        if self.status == 'Выполнена' and not self.performer:
-            self.status = 'Новая'
-            raise ValidationError(
-                {"status": ("В задаче со статусом 'Выполнена' должен быть "
-                            "исполнитель задачи")}
-            )
 
     def save(self, *args, **kwargs):
         if not self.pk:  # on create
@@ -128,14 +107,13 @@ class Task(models.Model):
                           connection=Email.get_connection())
 
 
-class CommentManager(models.Manager):
-    def get_user_comment_count(self):
-        return self.get_queryset().filter(performer=True).count()
-
-
 class Comment(models.Model):
-    comment = HTMLField('Комментарий', null=False, blank=False)
+    comment = HTMLField(null=False, blank=False)
     date_created = models.DateTimeField(auto_now_add=True)
+#    integration_id = models.IntegerField(null=True)
+#    comment_type = models.CharField(default='history', max_length=30)
+#    user_name = models.CharField(max_length=100, null=True)
+#    avatar = models.URLField()
     task = models.ForeignKey(Task,
                              null=True,
                              blank=True,
@@ -146,7 +124,6 @@ class Comment(models.Model):
                                   blank=True,
                                   on_delete=models.SET_NULL,
                                   related_name='comment_performer')
-    objects = CommentManager()
 
     class Meta:
         verbose_name = 'Комментарий'

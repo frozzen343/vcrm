@@ -2,9 +2,6 @@
 {% load widget_tweaks %}
 {% block content %}
 
-    <!-- Iframe autoresizer -->
-    <script src='iframe_resizer/iframeResizer.min.js'></script>
-    {% comment %} <script src="https://raw.githubusercontent.com/davidjbradshaw/iframe-resizer/master/js/iframeResizer.contentWindow.min.js"></script> {% endcomment %}
     <style>
       iframe {
         width: 1px;
@@ -23,197 +20,131 @@
                 </div>
                 <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'main' %}">Главная</a></li>
                 <li class="breadcrumb-item text-dark opacity-5"><a href="{% url 'task_list' %}">Задачи</a></li>
-                <li class="breadcrumb-item text-dark active" aria-current="page"><b>{{ task.title }}</b></li>
+                <li class="breadcrumb-item text-dark active" id="task_number" aria-current="page">-</li>
             </ol>
         </nav>
     </div>
     <hr>
 
-    {% include "tasks/task_edit_modal.html" %}
-
-    <!-- Buttons -->
-    <div class="card crystal" style="margin-top: 0px; margin-bottom: 0;">
-        <div class="card-body">
-
-            <div class="col-lg-12">
-                <div class="row">
-                    {% if task.status != 'Выполнена' or 'perms.edit_closed_task' in perms %}
-                        <button class="custom-btn btn-16" data-toggle="modal" data-target="#Modal_Edit" style="margin-right:15px;">
-                            <i class="material-icons">edit</i>
-                            Изменить
-                            {% if form.errors %}
-                            <div class="alert alert-danger" style="padding:0">
-                                <div class="container">
-                                    <div class="alert-icon">
-                                        <i class="material-icons">error_outline</i>
-                                    </div>
-                                    <b>Ошибка</b>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </button>
-                        {% if task.status == 'Новая' or task.status == 'Отложена' or task.status == 'Не задача' %}
-                            <button class="custom-btn btn-3" data-toggle="modal" data-target="#Modal_Task_Take" style="margin-right:15px;">
-                            <i class="material-icons">done</i>
-                            Принять задачу
-                            </button>
-                        {% endif %}
-                        {% if task.status == 'В работе' %}
-                            <button class="custom-btn btn-4" data-toggle="modal" data-target="#Modal_Task_Done" style="margin-right:15px;">
-                            <i class="material-icons">done</i>
-                            Закрыть задачу
-                            </button>
-                        {% endif %}
-                        {% if task.status != 'Отложена' %}
-                        <button class="custom-btn btn-11" data-toggle="modal" data-target="#Modal_Task_Postpone" style="margin-right:15px;">
-                            <i class="material-icons">trending_up</i>
-                            Отложить
-                        </button>
-                        {% endif %}
-                        {% if task.status != 'Не задача' %}
-                    <button class="custom-btn btn-15" data-toggle="modal" data-target="#Modal_Task_Down" style="margin-right:15px;">
-                        <i class="material-icons">close</i>
-                        Не задача
-                    </button>
-                    {% endif %}
-                    {% endif %}
-                </div>
-            </div>
-
-        </div>
-    </div>
-
     <!-- Task info -->
     <div class="card" style="margin-top: 0px;">
-        <div class="row">
-            <div class="col-lg-8">
-                <ul class="list-group list-group-flush" style="padding: 1rem;">
-                    <h4 class="Title" style="margin-left: 10px;">Задача №{{ task.id }} <hr/> </h4>
-                    <li class="list-group-item g_field" style="align-items: center;">
-                        <div class="label">Статус:</div>
-                        <span class="badge badge-pill
-                                {% if task.status == 'Новая' %} badge-default
-                                {% elif task.status == 'В работе' %} badge-warning
-                                {% elif task.status == 'Выполнена' %} badge-success
-                                {% elif task.status == 'Отложена' %} badge-rose
-                                {% elif task.status == 'Не задача' %} badge-primary {% endif %}" 
-                                style="margin-right:10px">{{ task.status }}</span>
-                        {% if task.drive %}
-                        <span class="material-icons" style="margin-left:3px">directions_car</span>
-                        {% endif %}
-                        {% if task.fire %}
-                        <span class="material-icons" style="margin-left:3px">local_fire_department</span>
-                        {% endif %}
-                    </li>
-                    <li class="list-group-item g_field">
-                        <div class="label">Трудозатраты в часах:</div>
-                        <div class="text">{{ task.hours_cost }}</div>
-                    </li>
-                    <li class="list-group-item g_field">
-                        <div class="label">Поставлена:</div>
-                        <div class="text">{{ task.date_created }}</div>
-                    </li>
-                    <li class="list-group-item g_field">
-                        <div class="label">Ответственный:</div>
-                        <div class="text">
-                            {% if task.performer %}
-                                <img src="{{ task.performer.avatar.url }}" style="height: auto; width: 36px; margin-right: 3px;" alt="user img">
-                                {{ task.performer.first_name }} {{ task.performer.last_name }}
-                            {% else %} - {% endif %}
-                        </div>
-                    </li>
-                    {% if task.mail and task.mail.attachments %}
-                        <li class="list-group-item g_field">
-                        <div class="text">Вложения</div>
-                        {% for attachment in task.mail.attachments.all %}
-                            {% if not attachment.inline %}
-                                <div><a href = "{{ attachment.file.url }}">{{ attachment.file.name }}</a></div>
-                            {% endif %}
-                        {% endfor %}
+        <div class="card-body">
+        <h4 class="Title" id="task_title" style="margin-left: 10px;">- </h4><hr/>
+            <div class="row">
+                <!-- task description, buttons -->
+                <div class="col-lg-8">
+                    <ul class="list-group list-group-flush" style="padding: 1rem;">
+                        <li class="list-group-item g_field p-0" id="task_mail_attachments"></li>
+                        <li class="list-group-item g_field p-0 pl-4 justify-content-end" >
+                            <iframe id="task_description" frameborder="0" srcdoc="-"></iframe>
+                            <div class="totooltip" data-tooltip="Изменить описание">
+                                <span id="edit_modal_show" class="material-icons"  data-toggle="modal" data-target="#Modal_Edit" style="cursor: pointer; color: saddlebrown; display: none;">
+                                    edit
+                                </span>
+                            </div>
                         </li>
-                    {% endif %}
-                    <li class="list-group-item g_field">
-                        <div class="label">Суть задачи</div>
-                    </li>
-                    <li class="list-group-item g_field">
-                        <iframe id="myIframe" frameborder="0" srcdoc="
-                        {{ task.description }}
-                           "></iframe>
-                    </li>         
-                </ul>
-            </div>
-            <div class="col-lg-4">
-                <ul class="list-group list-group-flush" style="padding: 1rem">
-                    <h4 class="Title" style="margin-left: 10px;">Клиент<hr/></h4>
-                    {% if 'clients.change_contact' in perms %}
-                        {% if task.client %}
-                            {% if task.contacts not in contacts.all %}
-                                <li class="list-group-item g_field">
-                                    <a href="{% url 'contact_create' fk=task.client.pk contact=task.contacts %}" class="btn btn-outline-secondary btn-sm" role="button" style="margin-left: 2rem;">
-                                        Привязать контакт к клиенту
-                                    </a>
-                                </li>
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                    <li class="list-group-item g_field">
-                        <div class="label">Контакты</div>
-                        <div class="text">{{ task.contacts|default:"_" }}</div>
-                    </li>
-                    <li class="list-group-item g_field">
-                        <div class="label">Организация</div>
-                        <div class="text">{{ task.client.name|default:"_" }}</div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Comments 
-    <div class="card">
-        <div class="col-md-12">
-            <ul class="list-group list-group-flush" style="padding: 1rem">
-                <h4 class="Title" style="margin-left: 10px;">Коментарии к задаче <hr/> </h4>
-                <form method="POST" action="{% url 'task_edit' pk=task.id %}">
-                    {% csrf_token %}
-                    <div class="tab-pane active" id="schedule-1">
-                        <table class="table">
-                            <tbody>
-                                {% for comment in comments %}
-                                    <tr>
-                                        <td width="20%">
-                                            <div class="d-flex px-2 py-1">
-                                                <div>
-                                                    {% if comment.performer %}
-                                                    <img src="{{ comment.performer.avatar.url }}" style="height: auto; width: 36px; margin-right: 3px;" class="avatar avatar-sm me-3">
-                                                    {% endif %}
-                                                </div>
-                                                <div class="d-flex flex-column justify-content-center">
-                                                    <h6 class="mb-0 text-xs">{{ comment.performer.first_name }} {{ comment.performer.last_name }}</h6>  
-                                                    <p class="text-xs text-secondary mb-0">{{ comment.date_created }}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td width="80%" class="align-middle text-sm">
-                                        {{ comment.comment|safe }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        <hr>
-                        <div class="container">
-                            {{ form2.comment }}
-                            <input class='btn btn-md btn-outline-info mr-2' type="submit" name="add_comment" value="Добавить">
+                        <!-- fast buttons -->
+                        <li class="list-group-item g_field">
+                            <div class="row" id="status_buttons"></div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- task info -->
+                <div class="col-lg-4">
+                    <style>
+                        .table {
+                            table-layout: fixed;
+                        }
+                        .table td {
+                            flex-wrap: nowrap;
+                            padding-right: 5px;
+                            padding-left: 5px;
+                            border-top: 0px;
+                        }
+
+                    </style>
+                    <table class="table mt-3">
+                        <tbody>
+                            <tr>
+                                <td class="align-middle" width="38%">Статус</td>
+                                <td class="align-middle" width="60%" id="status_badge"></td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Организация</td>
+                                <td class="align-middle text-center">
+                                    <style> .btn.btn-link { color: black; }</style>
+                                    <select id="task_client_select" title="-" onchange="client_change();" class="selectpicker" data-size="7" data-style="pt-1 pr-1 pb-1 pl-0 btn btn-link colorblack" tabindex="-98" data-width="180px">
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Контакты</td>
+                                <td class="align-middle pl-4 row" id="task_contacts">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-0"></td>
+                                <td class="align-middle text-right p-0" id="attach_contact">-</td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Трудозатраты в часах</td>
+                                <td class="align-middle pl-4 row" id="task_hours">-</td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Поставлена</td>
+                                <td class="align-middle" id="task_date_created">-</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Исполнитель</td>
+                                <td class="align-middle pl-4 row" id="task_user">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- comments, history, notes 
+                <div class="col-lg-8">
+                    <hr>
+                    <ul class="nav nav-pills nav-pills-info" role="tablist">
+                        <li class="nav-item" id="comments_comment">
+                            <a id="navbar_new_task" class="nav-link active" data-toggle="tab" href="#" role="tablist" aria-expanded="true">
+                                Комментарии
+                            </a>
+                        </li>
+                        <li class="nav-item" id="comments_history">
+                            <a class="nav-link" data-toggle="tab" href="#" role="tablist" aria-expanded="false">
+                                История
+                            </a>
+                        </li>
+                        <li class="nav-item" id="comments_note">
+                            <a class="nav-link" data-toggle="tab" href="#" role="tablist" aria-expanded="false">
+                                Заметки
+                            </a>
+                        </li>
+                    </ul>
+                    <hr>
+
+                    <table class="table"><tbody id="comments_table"></tbody></table>
+                
+                    <div class="container" id="add_comment_placement">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <img alt="Avatar" style="height: auto; width: 41px; margin-right: 3px;" class="rounded-circle img-fluid" src="{{ user.avatar.url }}"/>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Добавить комментарий" id="add_comment_show">
                         </div>
                     </div>
-                </form>
-            </ul>
+                    
+                </div>
+                -->
+            </div>
         </div>
     </div>
--->
-    <script>
-      iFrameResize({ log: true }, '#myIframe')
-    </script>
 
+    {% include "tasks/task_edit_modal.html" %}
+
+{% endblock %}
+{% block scripts %}
+
+    {% include "tasks/task_edit_scripts.html" %}
 {% endblock %}

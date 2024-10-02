@@ -114,7 +114,7 @@
             var link_full_month = "&full_month="+task_full_month;
         } else { var link_full_month = ""; }
 
-        var url_link = "{% url 'api_task_list' %}?status="+task_status+link_page+link_client+link_performer+link_full_month;
+        var url_link = "{% url 'task-list' %}?status="+task_status+link_page+link_client+link_performer+link_full_month;
 
         $.ajax({
             url: url_link,
@@ -200,43 +200,42 @@
         {% load static %}
         var url = "{% url 'task_edit' pk='000666000' %}".replace('000666000', task.id);
         return `
-                        <tr style="cursor: pointer;" onclick="window.location.href='${url}'">
-                          <td aria-label="Постановщик" class="col-lg-3">
-                            <div class="d-flex justify-content-arounds p-0">
-                                <img src="{% static 'imgs/task_icons/' %}${task.created_from}.png" style="height: 40px; width: 40px; margin-right: 3px;" class="avatar avatar-sm me-3">
-                                <div class="d-flex flex-column justify-content-center">
-                                    <h6 class="mb-0 text-xs">${task.mail !== null ? task.mail.from_name : (task.contacts !== null ? task.contacts : '-')}</h6>
-                                    <p class="text-xs text-secondary mb-0">${task.client !== null ? task.client.name : '-'}</p>
-                                </div>
-                            </div>
-                          </td>
-                          <td aria-label="Заголовок" class="col-lg-4 align-middle text-sm">
-                              <!--<p class="text-xs font-weight-bold mb-0">Manager</p>-->
-                              <p class="text-xs text-secondary mb-0">${task.title}</p>
-                              <!--<i class="material-icons" style="font-size: 15px;">comment</i>-->
-                              <!--3-->
-                          </td>
-                          <td aria-label="Статус" class="col-lg-1 align-middle text-center text-sm">
-                            ${GetStatusBadge(task.status)}
-                            ${task.fire !== false ? '<span class="material-icons" style="margin-left:0cm">local_fire_department</span>' : ''}
-                            ${task.drive !== false ? '<span class="material-icons" style="margin-left:0cm">directions_car</span>' : ''}
-                          </td>
-                          <td aria-label="Ответственный" class="col-lg-1 align-middle text-center text-sm">
-                            <div class="d-flex justify-content-center" style="font-size: 13px;">
-                              ${task.performer !== null ?
-                                '<img src="'+task.performer.avatar+'" style="height: 40px; width: 40px; margin-right: 3px;" alt="Avatar">'
-                                    +'<div class="d-flex flex-column justify-content-center"><p class="mb-0">'+task.performer.first_name+'</p><p class="mb-0">'
-                                    +task.performer.last_name+'</p></div>'
-                                : '-'}
-                            </div>
-                          </td>
-                          <td aria-label="Поставлена / Закрыта" class="col-lg-3 align-middle text-center">
-                            <span class="text-secondary text-xs font-weight-bold">
-                              ${task.date_created !== null ? task.date_created+(task.date_closed !== null ? '<br><div class="text-success">'+task.date_closed : '</div><br>-') : '-'}
-                            </span>
-                          </td>
-                        </tr>
+                <tr style="cursor: pointer;" onclick="window.location.href='${url}'">
+                  <td aria-label="Постановщик" class="col-lg-3">
+                    <div class="d-flex justify-content-arounds p-0">
+                        <img src="{% static 'imgs/task_icons/' %}${task.created_from}.png" style="height: 40px; width: 40px; margin-right: 3px;" class="avatar avatar-sm me-3">
+                        <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-xs">${task.mail !== null ? task.mail.from_name : (task.contacts !== null ? task.contacts : '-')}</h6>
+                            <p class="text-xs text-secondary mb-0">${task.client !== null ? task.client_name : '-'}</p>
+                        </div>
+                    </div>
+                  </td>
+                  <td aria-label="Заголовок" class="col-lg-4 align-middle text-sm">
+                      <!--<p class="text-xs font-weight-bold mb-0">Manager</p>-->
+                      <p class="text-xs text-secondary mb-0">${task.title}</p>
+                      <!--<i class="material-icons" style="font-size: 15px;">comment</i>-->
+                      <!--3-->
+                  </td>
+                  <td aria-label="Статус" class="col-lg-1 align-middle text-center text-sm">
+                    ${GetStatusBadge(task.status)}
+                    ${task.fire !== false ? '<span class="material-icons" style="margin-left:0cm">local_fire_department</span>' : ''}
+                    ${task.drive !== false ? '<span class="material-icons" style="margin-left:0cm">directions_car</span>' : ''}
+                  </td>
+                  <td aria-label="Ответственный" class="col-lg-1 align-middle text-center text-sm">
+                    <div class="d-flex justify-content-center" style="font-size: 13px;">
+                      ${task.performer !== null ?
+                        '<img class="rounded-circle img-fluid" src="'+task.performer_info.avatar+'" style="height: 40px; width: 40px; margin-right: 3px;" alt="Avatar">'
+                            +'<div class="d-flex flex-column justify-content-center"><p class="mb-0">'+task.performer_info.first_name+'</p><p class="mb-0">'
+                            +task.performer_info.last_name+'</p></div>'
+                        : '-'}
+                    </div>
+                  </td>
+                  <td aria-label="Поставлена / Закрыта" class="col-lg-3 align-middle text-center">
+                    <span class="text-secondary text-xs font-weight-bold">
+                      ${task.date_created !== null ? task.date_created+(task.date_closed !== null && task.status === 'Выполнена' ? '<br><div class="text-success">'+task.date_closed : '</div><br>-') : '-'}
+                    </span>
+                  </td>
+                </tr>
         `;
     }
-
 </script>

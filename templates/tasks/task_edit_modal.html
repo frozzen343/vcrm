@@ -1,185 +1,141 @@
 {% load widget_tweaks %}
 
-    
-<form method="POST" action="{% url 'task_edit' pk=task.id %}">
-    {% csrf_token %}
-
-    <!-- Edit Modal -->
-        <div class="modal fade" id="Modal_Edit" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h5 class="modal-title">Редактировать</h5>
+<!-- Edit description Model -->
+<div class="modal fade" id="Modal_Edit" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Редактировать описание</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <i class="material-icons">clear</i>
                 </button>
+            </div>
+            <div class="modal-body">
+                <textarea id="task_description_textarea"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-md btn-outline-info mr-2" id="task_description_save">Сохранить</button>
+                <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--  End Edit Modal -->
+
+<!-- Attach contact Modal -->
+    <div class="modal fade" id="Modal_Attach_Contact" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Сохранение контакта</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="material-icons">clear</i>
+                    </button>
                 </div>
-                <div class="modal-body">
-
-                    {% for field in form %}
-                        <div class="form-group text-left">
-                            {% if field.errors %}
-                                <div class="alert alert-danger" style="padding:0">
-                                    <div class="container">
-                                        <div class="alert-icon">
-                                            <i class="material-icons">error_outline</i>
-                                        </div>
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true"><i class="material-icons">clear</i></span>
-                                        </button>
-                                        <b>Ошибка:</b> {{ field.errors }}
-                                    </div>
-                                </div>
-                            {% endif %}
-                            <div class="text-muted">
-                                <p>{{ field.help_text }}</p>
-                            </div>
-                            {% if field == form.performer or field == form.status %}
-                                {% if 'perms.change_performer' not in perms %}
-                                    {{ field|attr:"class:form-control from-control-lg"|attr:"hidden:True" }}
-                                {% else %}
-                                    {{ field.label_tag }}
-                                    {{ field|attr:"class:form-control from-control-lg" }}
-                                {% endif %}
-                            {% elif field == form.fire or field == form.drive %}
-                                <div class="form-check" style="margin-top: 30px;">
-                                    <label class="form-check-label">
-                                        {{ field.label_tag }}
-                                        {{ field|attr:"class:form-check-input" }}
-                                        <span class="form-check-sign">
-                                            <span class="check"></span>
-                                        </span>
-                                    </label>
-                                </div>  
-                            {% elif field == form.hours_cost %}
-                                {{ field.label_tag }}
-                                {{ field|attr:"class:form-control from-control-lg"|attr:"step:0.5" }}
-                            {% else %}
-                                {{ field.label_tag }}
-                                {{ field|attr:"class:form-control from-control-lg" }}
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-
+                <div class="modal-body" id="text_attach_contact">
+                    <div class="spinner h2">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <input class='btn btn-md btn-outline-info mr-2' type="submit" name="edit_task" value="Сохранить">
+                    <button type="button" class="btn btn-md btn-outline-info mr-2" id="attach_contact_button">Сохранить</button>
                     <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
                 </div>
             </div>
-            </div>
         </div>
-    <!--  End Edit Modal -->
+    </div>
+<!--  End Attach contact Modal -->
 
-    <!-- Take Task Modal -->
-        <div class="modal fade" id="Modal_Task_Take" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Взять задачу на выполнение?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <i class="material-icons">clear</i>
-                        </button>
-                    </div>
-                    {% if "@" in task.contacts %}
-                        <div class="modal-body">
-                            <li class="list-group-item g_field">
-                            <div class="form-check">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" name="notice_take" type="checkbox" value="">
-                                        Уведомить постановщика задачи
-                                    <span class="form-check-sign">
-                                        <span class="check"></span>
-                                    </span>
-                                </label>
-                            </div>
-                            </li>
-                        </div>
-                    {% endif %}
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-md btn-outline-info mr-2" name="edit_buttons" value="Принять">
-                        <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
-                    </div>
+<!-- Take Task Modal -->
+    <div class="modal fade" id="Modal_Task_Take" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Взять задачу на выполнение?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="material-icons">clear</i>
+                    </button>
                 </div>
-            </div>
-        </div>
-    <!--  End Take Task Modal -->
-
-    <!-- Done Task Modal -->
-        <div class="modal fade" id="Modal_Task_Done" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Перевести задачу в статус <b>выполнено</b>?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <i class="material-icons">clear</i>
-                        </button>
-                    </div>
                     <div class="modal-body">
-                        {% if task.mail_id %}
-                            <li class="list-group-item g_field">
-                                <div class="form-check">
-                                    <label class="form-check-label">
-                                        <input class="form-check-input" name="notice_done" type="checkbox" value="">
-                                            Уведомить постановщика задачи
-                                        <span class="form-check-sign">
-                                            <span class="check"></span>
-                                        </span>
-                                    </label>
-                                </div>
-                            </li>
-                        {% endif %}
-                        {% if 'perms.edit_closed_task' not in perms %}
-                            <li class="list-group-item g_field">
-                                <p>После закрытия задачи, редактирование будет возможно </p>
-                                <p><b>только через руководство</b></p>
-                            </li>
-                        {% endif %}
+                        <div class="form-check">
+                            <label class="form-check-label" id="modal_notice_task_take"></label>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-md btn-outline-info mr-2" name="edit_buttons" value="Выполнено">
-                        <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
+                <div class="modal-footer">
+                    <div class="spinner h2" id="take_task_button_loading">
+                        <i class="fa fa-spinner fa-spin"></i>
                     </div>
+                    <button type="button" class="btn btn-md btn-outline-info mr-2" id="take_task_button">Принять</button>
+                    <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
                 </div>
             </div>
         </div>
-    <!--  End Done Task Modal -->
+    </div>
+<!--  End Take Task Modal -->
 
-    <!-- Postpone Task Modal -->
-        <div class="modal fade" id="Modal_Task_Postpone" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Перевести задачу в статус <b>отложено</b>?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <i class="material-icons">clear</i>
-                        </button>
+<!-- Done Task Modal -->
+    <div class="modal fade" id="Modal_Task_Done" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Перевести задачу в статус <b>выполнено</b>?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="material-icons">clear</i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <label class="form-check-label" id="modal_notice_task_done"></label>                        
                     </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-md btn-outline-info mr-2" name="edit_buttons" value="Отложено">
-                        <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
+                    <div id="no_perm_edit_done_task"></div>
+                </div>
+                <div class="modal-footer">
+                    <div class="spinner h2" id="done_task_button_loading">
+                        <i class="fa fa-spinner fa-spin"></i>
                     </div>
+                    <button type="button" class="btn btn-md btn-outline-info mr-2" id="done_task_button">Выполнено</button>
+                    <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
                 </div>
             </div>
         </div>
-    <!--  End Postpone Task Modal -->
+    </div>
+<!--  End Done Task Modal -->
 
-    <!-- Not Task Modal -->
-        <div class="modal fade" id="Modal_Task_Down" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Перевести задачу в статус <b>не задача</b>?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <i class="material-icons">clear</i>
-                        </button>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-md btn-outline-info mr-2" name="edit_buttons" value="Не задача">
-                        <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
-                    </div>
+<!-- Postpone Task Modal -->
+    <div class="modal fade" id="Modal_Task_Postpone" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Перевести задачу в статус <b>отложено</b>?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="material-icons">clear</i>
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-md btn-outline-info mr-2" id="postpone_task_button">Отложено</button>
+                    <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
                 </div>
             </div>
         </div>
-    <!--  End Not Task Modal -->
-</form>
+    </div>
+<!--  End Postpone Task Modal -->
+
+<!-- Not Task Modal -->
+    <div class="modal fade" id="Modal_Task_Down" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Перевести задачу в статус <b>не задача</b>?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="material-icons">clear</i>
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-md btn-outline-info mr-2" id="down_task_button">Не задача</button>
+                    <button type="button" class="btn btn-success btn-outline-secondary" data-dismiss="modal">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--  End Not Task Modal -->
+

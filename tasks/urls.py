@@ -1,7 +1,13 @@
-from django.urls import path
+from rest_framework.routers import DefaultRouter
+from django.urls import path, include
 
 import tasks.views as views
 import tasks.views_api as views_api
+
+
+router = DefaultRouter()
+router.register(r'tasks', views_api.TaskViewSet)
+router.register(r'comments', views_api.CommentViewSet)
 
 
 urlpatterns = [
@@ -9,8 +15,5 @@ urlpatterns = [
     path('create/', views.TaskCreateView.as_view(), name='task_create'),
     path('edit/<int:pk>', views.TaskEditView.as_view(), name='task_edit'),
 
-    path('api/v1/task_list', views_api.TaskListAPIView.as_view(),
-         name='api_task_list'),
-    path('api/v1/task_create', views_api.TaskCreateAPIView.as_view(),
-         name='api_task_create'),
+    path('api/v1/', include(router.urls)),
 ]
