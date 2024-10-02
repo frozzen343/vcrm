@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'silk',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
@@ -57,6 +56,9 @@ INSTALLED_APPS = [
     'integrations',
 ]
 
+if DEBUG:
+    INSTALLED_APPS.append('silk')
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -65,8 +67,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'silk.middleware.SilkyMiddleware',
 ]
+
+if DEBUG:
+    INSTALLED_APPS.append('silk.middleware.SilkyMiddleware')
 
 ROOT_URLCONF = 'vcrm.urls'
 
