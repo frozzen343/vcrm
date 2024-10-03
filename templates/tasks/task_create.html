@@ -34,20 +34,30 @@
                             <input type="text" class="form-control" id="task_contacts">
                         </div>
 
-                        <div class="mt-1 mr-4" id="user-list-options">
-                        </div>
+                        <div class="row ml-0">
+                            <div class="mt-2 mr-4" id="client-li">
+                                <label class="align-middle">Трудозатраты в часах</label>
+                                <input id="input_task_hours" value="0.5" type="number" step="0.5" min="0.5" class="form-control" style="width:180px;">
+                            </div>
+                            <div class="mt-1">
+                                <div class="mt-1 mr-4" id="user-list-options">
+                                </div>
+                                <div class="mt-1 mr-4">
+                                    <select id="task_status" class="selectpicker" data-size="7" data-style="p-1 btn btn-outline btn-round text-end" title="Статус задачи" tabindex="-98">
+                                        <option value="Новая">Новая</option>
+                                        <option value="В работе">В работе</option>
+                                        <option value="Выполнена">Выполнена</option>
+                                        <option value="Отложена">Отложена</option>
+                                        <option value="Не задача">Не задача</option>
+                                    </select>
+                                </div>
+                                <div class="mt-1 mr-4" id="client-list-options">
+                                </div>
+                            </div>
 
-                        <div class="mt-1 mr-4">
-                            <select id="task_status" class="selectpicker" data-size="7" data-style="p-1 btn btn-outline btn-round text-end" title="Статус задачи" tabindex="-98">
-                                <option value="Новая">Новая</option>
-                                <option value="В работе">В работе</option>
-                                <option value="Выполнена">Выполнена</option>
-                                <option value="Отложена">Отложена</option>
-                                <option value="Не задача">Не задача</option>
-                            </select>
-                        </div>
+                            
 
-                        <div class="mt-1 mr-4" id="client-list-options">
+                            
                         </div>
 
                         <div class="row">

@@ -56,8 +56,8 @@ INSTALLED_APPS = [
     'integrations',
 ]
 
-if DEBUG:
-    INSTALLED_APPS.append('silk')
+#if DEBUG:
+    #INSTALLED_APPS.append('silk')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -69,8 +69,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-if DEBUG:
-    INSTALLED_APPS.append('silk.middleware.SilkyMiddleware')
+#if DEBUG:
+    #INSTALLED_APPS.append('silk.middleware.SilkyMiddleware')
 
 ROOT_URLCONF = 'vcrm.urls'
 

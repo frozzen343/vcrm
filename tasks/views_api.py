@@ -19,13 +19,13 @@ class TaskViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['performer', 'client_id', ]
 
-    def perform_create(self, serializer):
-        instance = serializer.save()
-        user_first_name = self.request.user.first_name
-        user_last_name = self.request.user.last_name
-        comment = (f'<p>Пользователь <b>{user_first_name} {user_last_name}</b>'
-                   ' создал задачу</p>')
-        Comment.objects.create(task=instance, comment=comment)
+    # def perform_create(self, serializer):
+    #     instance = serializer.save()
+    #     user_first_name = self.request.user.first_name
+    #     user_last_name = self.request.user.last_name
+    #     comment = (f'<p>Пользователь <b>{user_first_name} {user_last_name}
+    #               '</b> создал задачу</p>')
+    #     Comment.objects.create(task=instance, comment=comment)
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)

@@ -14,12 +14,17 @@
             performer: $("#userSelect").val(),
             client: $("#clientSelect").val(),
             status: $("#task_status").val(),
+            hours_cost: $("#input_task_hours").val(),
             fire: $("#task_fire").is(":checked"),
             drive: $("#task_drive").is(":checked"),
             description: $("#task_create_textarea").val(),
         };
         if (!formData.title) {
             showNotification('danger', "Ошибка: Не указан заголовок.");
+            document.getElementById("submit_button").style.display = 'inline';
+            document.getElementById("submit_button_loading").style.display = 'none';
+        } else if ((formData.hours_cost < 0.5) || !formData.hours_cost) {
+            showNotification('danger', "Ошибка: Часов должно быть больше 0.5.");
             document.getElementById("submit_button").style.display = 'inline';
             document.getElementById("submit_button_loading").style.display = 'none';
         } else if (!formData.status) {
