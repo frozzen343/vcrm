@@ -79,6 +79,8 @@ class Task(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:  # on create
+            if self.status == 'Выполнена':
+                self.date_closed = timezone.now()
             self.notify_users()
         if self.status != self.__original_status:
             if self.status == 'Выполнена':
