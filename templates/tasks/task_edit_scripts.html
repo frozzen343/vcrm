@@ -62,9 +62,10 @@
                 mail_notice: $("#task_notice_done").is(":checked")
             };
 
-            if ($('#task_client').text() === '-') {
+            var selectedValue = document.getElementById("task_client_select").value;
+            if (!selectedValue) {
                 $('#Modal_Task_Done').modal('hide');
-                showNotification('danger', 'Ошибка: Не указана организация');
+                showNotification('danger', 'Ошибка: Не указан клиент');
             } else {
                 $.ajax({
                 url: "{% url 'task-list' %}"+task_id+"/",
@@ -140,6 +141,47 @@
                 data: formData,
                 success: function (response) {
                     $('#Modal_Edit').modal('hide');
+                    get_task_info();
+                },
+                error: function(err) {
+                    console.log(err);
+                    showNotification('danger', err.responseText);
+                }
+            });
+        });
+        
+        $('#task_fire').click(function() {
+            const url = window.location.href;
+            const task_id = url.substring(url.lastIndexOf('/') + 1);
+            const formData = {
+                fire: $("#task_fire").is(":checked")
+            };
+            $.ajax({
+                url: "{% url 'task-list' %}"+task_id+"/",
+                type: "PATCH",
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                data: formData,
+                success: function (response) {
+                    get_task_info();
+                },
+                error: function(err) {
+                    console.log(err);
+                    showNotification('danger', err.responseText);
+                }
+            });
+        });
+        $('#task_drive').click(function() {
+            const url = window.location.href;
+            const task_id = url.substring(url.lastIndexOf('/') + 1);
+            const formData = {
+                drive: $("#task_drive").is(":checked")
+            };
+            $.ajax({
+                url: "{% url 'task-list' %}"+task_id+"/",
+                type: "PATCH",
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                data: formData,
+                success: function (response) {
                     get_task_info();
                 },
                 error: function(err) {
@@ -253,6 +295,8 @@
                     data: $(this).serialize(),
                     success: function(client_list){
                         var select = $('#task_client_select');
+                        select.empty();
+                        $("#task_client_select").selectpicker('refresh');
                         client_list.forEach(function (client) {
                             if (response.client && response.client.name && client.name === response.client.name) {
 
@@ -344,6 +388,13 @@
                     UserContainer.append(UserPerformer);
                 } else {
                     UserContainer.text('-')
+                }
+                
+                if (response.drive) {
+                    document.getElementById('task_drive').checked = true
+                }
+                if (response.fire) {
+                    document.getElementById('task_fire').checked = true
                 }
 
                 if(response.mail && response.mail.attachments && response.mail.attachments.length > 0) {

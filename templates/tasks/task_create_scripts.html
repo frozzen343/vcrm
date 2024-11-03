@@ -47,6 +47,10 @@
             showNotification('danger', "Ошибка: В задаче со статусом 'Выполнена' должен быть исполнитель задачи.");
             document.getElementById("submit_button").style.display = 'inline';
             document.getElementById("submit_button_loading").style.display = 'none';
+        } else if (formData.status === 'Выполнена' && !formData.client) {
+            showNotification('danger', "Ошибка: В задаче со статусом 'Выполнена' должен быть указан клиент.");
+            document.getElementById("submit_button").style.display = 'inline';
+            document.getElementById("submit_button_loading").style.display = 'none';
         } else {
             $.ajax({
                 url: "{% url 'task-list' %}",

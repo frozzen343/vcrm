@@ -3,7 +3,7 @@ from django.db.models import Q
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from datetime import datetime
 
 from tasks.models import Task, Comment
@@ -43,6 +43,13 @@ class TaskViewSet(viewsets.ModelViewSet):
         if (not self.request.user.has_perm('perms.change_performer')
                 and task_performer):
             raise PermissionDenied()
+
+        if task_status == 'Выполнена' and not instance.client:
+            return Response(
+                {"error": "Неправильный аргумент: поле client не предоставлено."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
 
         if task_performer == '':
             instance.status = 'Новая'

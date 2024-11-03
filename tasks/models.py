@@ -1,6 +1,6 @@
 from tinymce.models import HTMLField
 from django.db import models
-# from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.core.mail import send_mail
 
@@ -81,10 +81,14 @@ class Task(models.Model):
         if not self.pk:  # on create
             if self.status == 'Выполнена':
                 self.date_closed = timezone.now()
+            if self.status == 'Выполнена' and not self.client:
+                raise ValidationError({"required_field": "Неправильный аргумент: поле 'required_field' должно быть заполнено."})
             self.notify_users()
         if self.status != self.__original_status:
             if self.status == 'Выполнена':
                 self.date_closed = timezone.now()
+            if self.status == 'Выполнена' and not self.client:
+                raise ValidationError({"required_field": "Неправильный аргумент: поле 'required_field' должно быть заполнено."})
         super().save(*args, **kwargs)
         self.__original_status = self.status
 
